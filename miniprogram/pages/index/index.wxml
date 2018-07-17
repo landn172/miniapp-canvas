@@ -1,0 +1,3 @@
+<view class="container" id="container" catchtouchmove="noop">
+  <canvas canvas-id="canvas-id" disable-scroll="true"></canvas>
+</view>

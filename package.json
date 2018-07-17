@@ -1,0 +1,24 @@
+{
+  "name": "miniapp-canvas",
+  "version": "1.0.0",
+  "main": "lib/miniapp-canvas.js",
+  "module": "lib/miniapp-canvas.module.js",
+  "esnext": "lib/miniapp-canvas.es6.js",
+  "typings": "lib/index.d.ts",
+  "repository": "git@github.com:landn172/miniapp-canvas.git",
+  "author": "蒋瑶 <landn172@gmail.com>",
+  "scripts": {
+    "build": "node scripts/build.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@tuhu/dt-weapp": "^1.1.5",
+    "fs-extra": "^7.0.0",
+    "rollup": "^0.62.0",
+    "rollup-plugin-filesize": "^2.0.0",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.13.0",
+    "typescript": "^2.9.2"
+  }
+}
