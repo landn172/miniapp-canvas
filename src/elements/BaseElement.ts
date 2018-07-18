@@ -1,5 +1,19 @@
+/**
+ * 基础元素
+ *
+ * @export
+ * @class BaseElement
+ */
 export default class BaseElement {
   type: string = 'base';
+  /**
+   * Creates an instance of BaseElement.
+   * @param {number} [width=0]
+   * @param {number} [height=0]
+   * @param {number} [top=0]
+   * @param {number} [left=0]
+   * @memberof BaseElement
+   */
   constructor(
     public width = 0,
     public height = 0,

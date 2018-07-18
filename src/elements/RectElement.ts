@@ -1,20 +1,39 @@
 import BaseElement from './BaseElement';
 
+/**
+ * 矩形元素
+ *
+ * @export
+ * @class RectElement
+ * @extends {BaseElement}
+ * @property {string} bgColor 背景颜色
+ * @property {string} stroke 边框样式
+ * @property {boolean} solid 是否实心
+ * @property {any[]} shadow 阴影样式
+ */
 export default class RectElement extends BaseElement {
   type = 'rect';
+  /**
+   * 背景颜色
+   */
   bgColor: string = '#000';
+  /**
+   * 边框样式
+   */
   stroke: string = '#000';
   /**
    * 是否实心
-   *
-   * @type {boolean}
-   * @memberof RectElement
    */
   solid: boolean = true;
   /**
    * 阴影样式
    */
   shadow: any[] = null;
+
+  /**
+   * Creates an instance of RectElement.
+   * @memberof RectElement
+   */
   constructor() {
     super();
   }

@@ -15,6 +15,12 @@ const typeMap = {
   text: TextElement
 };
 
+/**
+ * miniapp-canvas
+ *
+ * @export
+ * @class MiniappCanvas
+ */
 export default class MiniappCanvas {
   elements: BaseElement[];
   ctx: wx.CanvasContext;
@@ -50,12 +56,24 @@ export default class MiniappCanvas {
     this.elements.push(element);
   }
 
-  preload() {
+  /**
+   * 预加载资源
+   *
+   * @private
+   * @returns Promise
+   * @memberof MiniappCanvas
+   */
+  private preload() {
     const promises = this.elements.filter(element => element instanceof ImageElement).map((element: BaseElement) => element.preload());
 
     return Promise.all(promises);
   }
 
+  /**
+   * 开始绘制canvas
+   *
+   * @memberof MiniappCanvas
+   */
   draw() {
     const { ctx } = this;
     this.elements.forEach(element => {

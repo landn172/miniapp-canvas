@@ -3,11 +3,30 @@ import BaseElement from './BaseElement';
 
 const httpSrc = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/;
 
+/**
+ * 图片元素
+ *
+ * @export
+ * @class ImageElement
+ * @extends {BaseElement}
+ * @property {boolean} circle 显示圆形
+ */
 export default class ImageElement extends BaseElement {
   type = 'image';
   dWidth: number;
   dHeight: number;
+  /**
+   * 显示圆形
+   *
+   * @type {boolean}
+   * @memberof ImageElement
+   */
   circle: boolean = false;
+
+  /**
+   * Creates an instance of ImageElement.
+   * @memberof ImageElement
+   */
   constructor() {
     super();
     this.image = '';

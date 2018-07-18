@@ -13,7 +13,8 @@ const interceptorMethods = ['fail', 'success', 'complete'];
 /**
  * 将方法promise化
  * 替换['fail', 'success', 'complete']
- * @param method
+ * @param {any} method 微信的方法
+ * @param {object} params 传入的方法
  */
 export function promisify<T>(method: any, params: any): Promise<T> {
   if (typeof method !== 'function') {
