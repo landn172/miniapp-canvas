@@ -477,9 +477,9 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
-"@tuhu/dt-weapp@^1.1.5":
-  version "1.1.5"
-  resolved "https://registry.npmjs.org/@tuhu/dt-weapp/-/dt-weapp-1.1.5.tgz#2bdd72f4651be6fce05976f94d4bee90d96f3578"
+"@tuhu/dt-weapp@^1.1.6":
+  version "1.1.6"
+  resolved "https://registry.npmjs.org/@tuhu/dt-weapp/-/dt-weapp-1.1.6.tgz#fbd9750e3a9fb30176c49f633c392204ebcd8118"
   dependencies:
     lodash "^4.17.5"
 
