@@ -1,0 +1,14 @@
+<view class="container" id="container">
+  <canvas canvas-id="canvas-id" style="width:{{width}}px;height:{{height}}px;" disable-scroll="true"></canvas>
+</view>
+<view class="wrapper-text">
+  <view class="text-main">
+    <text class="text">{{testStr}}</text>
+  </view>
+  <view class="text-main text-main1">
+    <text class="text text1">{{testStr}}</text>
+  </view>
+  <view class="text-main text-main2">
+    <text class="text text2">{{testStr}}</text>
+  </view>
+</view>

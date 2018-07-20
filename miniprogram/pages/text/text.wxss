@@ -1,0 +1,42 @@
+/* pages/text/text.wxss */
+
+.wrapper-text {
+  line-height: 80px;
+}
+
+.text-main {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.text {
+  font-size: 16px;
+  color: #ccc;
+  line-height: 20px;
+  width: 100px;
+  overflow: hidden;
+  display: -webkit-box;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  text-decoration: underline;
+}
+
+.text-main1 {
+  vertical-align: bottom;
+}
+
+.text1 {
+  color: blue;
+  text-decoration: overline dashed;
+}
+
+.text-main2 {
+  vertical-align: top;
+}
+
+.text2 {
+  color: green;
+  font-size: 20px;
+  text-decoration: line-through red dotted;
+}

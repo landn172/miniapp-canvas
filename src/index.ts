@@ -1,4 +1,11 @@
-import { BaseElement, ImageElement, RectElement, TextElement } from './elements';
+import {
+  BaseElement,
+  ImageElement,
+  RectElement,
+  TextElement
+} from './elements';
+import { promisify } from './utils';
+import Task from './utils/task';
 
 /**
  * 类型映射
@@ -22,9 +29,13 @@ const typeMap = {
  * @class MiniappCanvas
  */
 export default class MiniappCanvas {
-  elements: BaseElement[];
+  private elements: BaseElement[];
   ctx: wx.CanvasContext;
-  constructor(id = 'default') {
+  pedding = false;
+
+  private task = new Task();
+
+  constructor(private id = 'default', public unit = 'px') {
     this.elements = [];
     this.ctx = wx.createCanvasContext(id);
   }
@@ -48,11 +59,22 @@ export default class MiniappCanvas {
     });
 
     await this.preload();
+    this.pedding = false;
+    this.runTasks();
+  }
+
+  /**
+   * 清空加载的元素
+   *
+   * @memberof MiniappCanvas
+   */
+  clear() {
+    this.elements.length = 0;
   }
 
   initElement(Element: any, config: IDefineConfig) {
     const element = new Element();
-    element.loadAttr(config);
+    element.loadAttr(config, this.unit);
     this.elements.push(element);
   }
 
@@ -64,7 +86,11 @@ export default class MiniappCanvas {
    * @memberof MiniappCanvas
    */
   private preload() {
-    const promises = this.elements.filter(element => element instanceof ImageElement).map((element: BaseElement) => element.preload());
+    this.pedding = true;
+
+    const promises = this.elements
+      .filter(element => element instanceof ImageElement)
+      .map((element: BaseElement) => element.preload());
 
     return Promise.all(promises);
   }
@@ -75,11 +101,52 @@ export default class MiniappCanvas {
    * @memberof MiniappCanvas
    */
   draw() {
+    if (this.pedding) {
+      this.task.addTask(this.draw.bind(this));
+      return;
+    }
+
     const { ctx } = this;
     this.elements.forEach(element => {
       element.draw(ctx);
     });
-    ctx.draw()
+    ctx.draw();
+  }
+
+  /**
+   * 保存canvas截图
+   *
+   * @memberof MiniappCanvas
+   */
+  async saveImage() {
+    wx.showLoading({
+      title: '正在生成图片中'
+    });
+
+    let tempFilePath = '';
+
+    try {
+      const res = await promisify<{ tempFilePath: string }>(
+        wx.canvasToTempFilePath,
+        {
+          canvasId: this.id
+        }
+      );
+
+      tempFilePath = res.tempFilePath;
+    } catch (error) {
+      wx.showToast({
+        title: '生成图片失败'
+      });
+    }
+
+    wx.hideLoading();
+
+    return tempFilePath;
+  }
+
+  private runTasks() {
+    this.task.runTask();
   }
 }
 

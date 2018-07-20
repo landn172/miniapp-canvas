@@ -1,5 +1,5 @@
 import { cache, getCache, promisify } from '../utils';
-import BaseElement from './BaseElement';
+import RectElement from './RectElement';
 
 const httpSrc = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/;
 
@@ -11,7 +11,7 @@ const httpSrc = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/;
  * @extends {BaseElement}
  * @property {boolean} circle 显示圆形
  */
-export default class ImageElement extends BaseElement {
+export default class ImageElement extends RectElement {
   type = 'image';
   dWidth: number;
   dHeight: number;
@@ -72,20 +72,18 @@ export default class ImageElement extends BaseElement {
       return;
     }
     ctx.save();
-    if (this.circle) {
-      this.drawCircle(ctx);
+    if (this.circle && !this.borderRadius) {
+      this.borderRadius = Math.min(this.width, this.height) / 2;
+    }
+    super.draw(ctx);
+    if (this.borderRadius) {
+      super.pathBorderRadius(ctx);
+      ctx.setGlobalAlpha(0);
+      ctx.setFillStyle('white');
+      ctx.clip();
+      ctx.setGlobalAlpha(1);
     }
     ctx.drawImage(this.image, this.left, this.top, this.width, this.height);
     ctx.restore();
-  }
-
-  private drawCircle(ctx: wx.CanvasContext) {
-    const radius = Math.max(this.width, this.height) / 2;
-    const x = this.left + this.width / 2;
-    const y = this.top + this.height / 2;
-
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, 2 * Math.PI);
-    ctx.clip();
   }
 }

@@ -28,12 +28,23 @@
 <dd></dd>
 </dl>
 
+## Constants
+
+<dl>
+<dt><a href="#cache">cache</a></dt>
+<dd><p>Cache font parsing.</p></dd>
+</dl>
+
 ## Functions
 
 <dl>
 <dt><a href="#promisify">promisify(method, params)</a></dt>
 <dd><p>将方法promise化
 替换[&#39;fail&#39;, &#39;success&#39;, &#39;complete&#39;]</p></dd>
+<dt><a href="#rpx2px">rpx2px(rpx)</a></dt>
+<dd><p>rpx =&gt; px</p></dd>
+<dt><a href="#f">f(str)</a> ⇒ <code>Object</code></dt>
+<dd><p>Parse font <code>str</code>.</p></dd>
 </dl>
 
 <a name="BaseElement"></a>
@@ -45,7 +56,7 @@
 * [BaseElement](#BaseElement)
     * [new BaseElement()](#new_BaseElement_new)
     * _instance_
-        * [.loadAttr(attrs)](#BaseElement+loadAttr)
+        * [.loadAttr(attrs, unit)](#BaseElement+loadAttr)
     * _static_
         * [.BaseElement](#BaseElement.BaseElement)
             * [new BaseElement([width], [height], [top], [left])](#new_BaseElement.BaseElement_new)
@@ -57,14 +68,15 @@
 
 <a name="BaseElement+loadAttr"></a>
 
-### baseElement.loadAttr(attrs)
+### baseElement.loadAttr(attrs, unit)
 <p>加载属性配置</p>
 
 **Kind**: instance method of [<code>BaseElement</code>](#BaseElement)  
 
-| Param | Type |
-| --- | --- |
-| attrs | <code>object</code> | 
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| attrs | <code>object</code> |  |  |
+| unit | <code>string</code> | <code>&quot;px&quot;</code> | <p>默认px</p> |
 
 **Example**  
 ```js
@@ -106,7 +118,7 @@
 * [ImageElement](#ImageElement) ⇐ [<code>BaseElement</code>](#BaseElement)
     * [new ImageElement()](#new_ImageElement_new)
     * _instance_
-        * [.loadAttr(attrs)](#BaseElement+loadAttr)
+        * [.loadAttr(attrs, unit)](#BaseElement+loadAttr)
     * _static_
         * [.ImageElement](#ImageElement.ImageElement)
             * [new ImageElement()](#new_ImageElement.ImageElement_new)
@@ -118,14 +130,15 @@
 
 <a name="BaseElement+loadAttr"></a>
 
-### imageElement.loadAttr(attrs)
+### imageElement.loadAttr(attrs, unit)
 <p>加载属性配置</p>
 
 **Kind**: instance method of [<code>ImageElement</code>](#ImageElement)  
 
-| Param | Type |
-| --- | --- |
-| attrs | <code>object</code> | 
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| attrs | <code>object</code> |  |  |
+| unit | <code>string</code> | <code>&quot;px&quot;</code> | <p>默认px</p> |
 
 **Example**  
 ```js
@@ -162,7 +175,8 @@
 * [RectElement](#RectElement) ⇐ [<code>BaseElement</code>](#BaseElement)
     * [new RectElement()](#new_RectElement_new)
     * _instance_
-        * [.loadAttr(attrs)](#BaseElement+loadAttr)
+        * [.drawWithBorder(ctx, [clip])](#RectElement+drawWithBorder)
+        * [.loadAttr(attrs, unit)](#BaseElement+loadAttr)
     * _static_
         * [.RectElement](#RectElement.RectElement)
             * [new RectElement()](#new_RectElement.RectElement_new)
@@ -172,16 +186,29 @@
 ### new RectElement()
 <p>矩形元素</p>
 
+<a name="RectElement+drawWithBorder"></a>
+
+### rectElement.drawWithBorder(ctx, [clip])
+<p>带边框绘制</p>
+
+**Kind**: instance method of [<code>RectElement</code>](#RectElement)  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| ctx | <code>wx.CanvasContext</code> |  | 
+| [clip] | <code>boolean</code> | <code>false</code> | 
+
 <a name="BaseElement+loadAttr"></a>
 
-### rectElement.loadAttr(attrs)
+### rectElement.loadAttr(attrs, unit)
 <p>加载属性配置</p>
 
 **Kind**: instance method of [<code>RectElement</code>](#RectElement)  
 
-| Param | Type |
-| --- | --- |
-| attrs | <code>object</code> | 
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| attrs | <code>object</code> |  |  |
+| unit | <code>string</code> | <code>&quot;px&quot;</code> | <p>默认px</p> |
 
 **Example**  
 ```js
@@ -219,7 +246,8 @@
 * [TextElement](#TextElement) ⇐ [<code>BaseElement</code>](#BaseElement)
     * [new TextElement()](#new_TextElement_new)
     * _instance_
-        * [.loadAttr(attrs)](#BaseElement+loadAttr)
+        * [.font](#TextElement+font)
+        * [.loadAttr(attrs, unit)](#BaseElement+loadAttr)
     * _static_
         * [.TextElement](#TextElement.TextElement)
             * [new TextElement()](#new_TextElement.TextElement_new)
@@ -229,16 +257,23 @@
 ### new TextElement()
 <p>文本元素</p>
 
+<a name="TextElement+font"></a>
+
+### textElement.font
+<p>字体</p>
+
+**Kind**: instance property of [<code>TextElement</code>](#TextElement)  
 <a name="BaseElement+loadAttr"></a>
 
-### textElement.loadAttr(attrs)
+### textElement.loadAttr(attrs, unit)
 <p>加载属性配置</p>
 
 **Kind**: instance method of [<code>TextElement</code>](#TextElement)  
 
-| Param | Type |
-| --- | --- |
-| attrs | <code>object</code> | 
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| attrs | <code>object</code> |  |  |
+| unit | <code>string</code> | <code>&quot;px&quot;</code> | <p>默认px</p> |
 
 **Example**  
 ```js
@@ -265,7 +300,9 @@
 * [MiniappCanvas](#MiniappCanvas)
     * [new MiniappCanvas()](#new_MiniappCanvas_new)
     * [.loadConfig(config)](#MiniappCanvas+loadConfig)
+    * [.clear()](#MiniappCanvas+clear)
     * [.draw()](#MiniappCanvas+draw)
+    * [.saveImage()](#MiniappCanvas+saveImage)
 
 <a name="new_MiniappCanvas_new"></a>
 
@@ -283,12 +320,30 @@
 | --- | --- |
 | config | <code>Array</code> | 
 
+<a name="MiniappCanvas+clear"></a>
+
+### miniappCanvas.clear()
+<p>清空加载的元素</p>
+
+**Kind**: instance method of [<code>MiniappCanvas</code>](#MiniappCanvas)  
 <a name="MiniappCanvas+draw"></a>
 
 ### miniappCanvas.draw()
 <p>开始绘制canvas</p>
 
 **Kind**: instance method of [<code>MiniappCanvas</code>](#MiniappCanvas)  
+<a name="MiniappCanvas+saveImage"></a>
+
+### miniappCanvas.saveImage()
+<p>保存canvas截图</p>
+
+**Kind**: instance method of [<code>MiniappCanvas</code>](#MiniappCanvas)  
+<a name="cache"></a>
+
+## cache
+<p>Cache font parsing.</p>
+
+**Kind**: global constant  
 <a name="promisify"></a>
 
 ## promisify(method, params)
@@ -301,4 +356,35 @@
 | --- | --- | --- |
 | method | <code>any</code> | <p>微信的方法</p> |
 | params | <code>object</code> | <p>传入的方法</p> |
+
+<a name="rpx2px"></a>
+
+## rpx2px(rpx)
+<p>rpx =&gt; px</p>
+
+**Kind**: global function  
+
+| Param |
+| --- |
+| rpx | 
+
+**Example**  
+```js
+iphone6
+ rpx2px(750) => 375
+ rpx2px('1rpx solid #000') => '0.5px solid #000'
+```
+<a name="f"></a>
+
+## f(str) ⇒ <code>Object</code>
+<p>Parse font <code>str</code>.</p>
+
+**Kind**: global function  
+**Returns**: <code>Object</code> - <p>Parsed font. <code>size</code> is in device units. <code>unit</code> is the unit
+  appearing in the input string.</p>  
+**Api**: private  
+
+| Param | Type |
+| --- | --- |
+| str | <code>String</code> | 
 
