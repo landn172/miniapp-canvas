@@ -175,7 +175,7 @@
 * [RectElement](#RectElement) ⇐ [<code>BaseElement</code>](#BaseElement)
     * [new RectElement()](#new_RectElement_new)
     * _instance_
-        * [.drawWithBorder(ctx, [clip])](#RectElement+drawWithBorder)
+        * [.drawWithBorder(ctx)](#RectElement+drawWithBorder)
         * [.loadAttr(attrs, unit)](#BaseElement+loadAttr)
     * _static_
         * [.RectElement](#RectElement.RectElement)
@@ -188,15 +188,14 @@
 
 <a name="RectElement+drawWithBorder"></a>
 
-### rectElement.drawWithBorder(ctx, [clip])
+### rectElement.drawWithBorder(ctx)
 <p>带边框绘制</p>
 
 **Kind**: instance method of [<code>RectElement</code>](#RectElement)  
 
-| Param | Type | Default |
-| --- | --- | --- |
-| ctx | <code>wx.CanvasContext</code> |  | 
-| [clip] | <code>boolean</code> | <code>false</code> | 
+| Param | Type |
+| --- | --- |
+| ctx | <code>wx.CanvasContext</code> | 
 
 <a name="BaseElement+loadAttr"></a>
 
