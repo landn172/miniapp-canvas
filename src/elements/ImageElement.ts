@@ -1,4 +1,5 @@
 import { cache, getCache, promisify } from '../utils';
+import { TimeoutTask } from '../utils/task';
 import RectElement from './RectElement';
 
 const httpSrc = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/;
@@ -40,9 +41,9 @@ export default class ImageElement extends RectElement {
       return;
     }
 
-    if (getCache(url)) {
-      return getCache(url);
-    }
+    // if (getCache(url)) {
+    //   return getCache(url);
+    // }
 
     // 在线资源
     if (httpSrc.test(url)) {
@@ -67,7 +68,7 @@ export default class ImageElement extends RectElement {
     return url;
   }
 
-  draw(ctx: wx.CanvasContext) {
+  async draw(ctx: wx.CanvasContext) {
     if (!this.image) {
       return;
     }
@@ -75,15 +76,24 @@ export default class ImageElement extends RectElement {
     if (this.circle && !this.borderRadius) {
       this.borderRadius = Math.min(this.width, this.height) / 2;
     }
+
+    this.bgColor = '#ffffff';
     super.draw(ctx);
+
     if (this.borderRadius) {
-      super.pathBorderRadius(ctx);
       ctx.setGlobalAlpha(0);
       ctx.setFillStyle('white');
+      super.pathBorderRadius(ctx);
       ctx.clip();
       ctx.setGlobalAlpha(1);
     }
     ctx.drawImage(this.image, this.left, this.top, this.width, this.height);
+    const drawPromise = TimeoutTask(
+      new Promise(resolve => ctx.draw(true, resolve)),
+      500
+    );
     ctx.restore();
+
+    return drawPromise;
   }
 }

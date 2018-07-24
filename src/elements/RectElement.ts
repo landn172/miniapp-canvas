@@ -1,4 +1,8 @@
+import findColor from '../utils/findColor';
+import { TimeoutTask } from '../utils/task';
 import BaseElement from './BaseElement';
+
+const getSizeAndUnitReg = /([\d\.]+)(px|rpx)/i;
 
 /**
  * 矩形元素
@@ -7,24 +11,62 @@ import BaseElement from './BaseElement';
  * @class RectElement
  * @extends {BaseElement}
  * @property {string} bgColor 背景颜色
- * @property {string} stroke 边框样式
+ * @property {string} border 边框样式 eg. 1px #fff
  * @property {boolean} solid 是否实心
- * @property {any[]} shadow 阴影样式
+ * @property {string} boxShadow 阴影样式
+ * @property {number} borderWidth 边框宽
+ * @property {string} borderColor 边框颜色
+ * @property {number} borderRadius 边框半径
  */
 export default class RectElement extends BaseElement {
   type = 'rect';
   /**
    * 背景颜色
    */
-  bgColor: string = '#000';
+  bgColor: string = '#ffffff';
   /**
    * 边框样式
    */
-  stroke: string = '#000';
+  // tslint:disable-next-line:variable-name
+  private _border: string = '';
+
+  get border() {
+    return this._border;
+  }
+
+  set border(value: string) {
+    this._border = value;
+    const borderColor = findColor(value);
+    if (borderColor) {
+      this.borderColor = borderColor;
+    }
+
+    const borderSizeMatch = value.match(getSizeAndUnitReg);
+    if (borderSizeMatch) {
+      const [size] = borderSizeMatch;
+      this.borderWidth = Number(size);
+    }
+  }
+
   /**
    * 是否实心
    */
   solid: boolean = true;
+
+  /**
+   * 边框宽
+   */
+  borderWidth = 0;
+
+  /**
+   * 边框颜色
+   */
+  borderColor = '';
+
+  /**
+   * 边框样式
+   */
+  private readonly borderStyle = 'solid';
 
   /**
    * 边框半径
@@ -34,7 +76,36 @@ export default class RectElement extends BaseElement {
   /**
    * 阴影样式
    */
-  shadow: any[] = null;
+  private shadow: any[] = null;
+
+  // tslint:disable-next-line:variable-name
+  private _boxShadow: string = '';
+
+  get boxShadow() {
+    return this._boxShadow;
+  }
+
+  set boxShadow(value: string) {
+    this._boxShadow = value;
+    let match;
+    const shadow = [];
+    const getSizeAndUnitRegGlobal = new RegExp(getSizeAndUnitReg, 'ig');
+    // tslint:disable-next-line:no-conditional-assignment
+    while ((match = getSizeAndUnitRegGlobal.exec(value))) {
+      const [, size, unit] = match;
+      shadow.push(~~size);
+    }
+
+    const color = findColor(value);
+    if (!color) {
+      throw new Error('[boxShadow] 未设置颜色');
+    }
+    shadow[3] = color;
+
+    shadow.length = 4;
+
+    this.shadow = shadow;
+  }
 
   /**
    * Creates an instance of RectElement.
@@ -46,11 +117,21 @@ export default class RectElement extends BaseElement {
 
   draw(ctx: wx.CanvasContext) {
     ctx.save();
-    ctx.setFillStyle(this.bgColor);
-    ctx.setStrokeStyle(this.stroke);
+    if (this.bgColor) {
+      ctx.setFillStyle(this.bgColor);
+    }
+    if (this.borderColor) {
+      ctx.setStrokeStyle(this.borderColor);
+    }
 
-    this.drawWithBorder(ctx);
+    if (this.borderWidth) {
+      ctx.setLineWidth(this.borderWidth);
+    }
+
+    const drawPromise = this.drawWithBorder(ctx);
     ctx.restore();
+
+    return drawPromise;
   }
 
   /**
@@ -79,15 +160,16 @@ export default class RectElement extends BaseElement {
   drawWithBorder(ctx: wx.CanvasContext) {
     const { borderRadius, width, height, top, left } = this;
     this.setShadow(ctx);
-    
-    this.fillorStroke = this.solid ? ctx.fill : ctx.stroke
+
+    this.fillorStroke = this.solid ? ctx.fill : ctx.stroke;
 
     if (borderRadius) {
       this.pathBorderRadius(ctx);
     } else {
       ctx.rect(left, top, width, height);
       this.fillorStroke.call(ctx);
-    }    
+    }
+    return TimeoutTask(new Promise(resolve => ctx.draw(true, resolve)), 500);
   }
 
   /**
@@ -102,28 +184,27 @@ export default class RectElement extends BaseElement {
 
     const halfW = width / 2;
     const halfH = height / 2;
-
-    const translateX = left + halfW;
-    const translateY = top + halfH;
-
-    ctx.translate(translateX, translateY);
-
     // 半径最大值
     const r = Math.min(borderRadius, halfW, halfH);
     ctx.beginPath();
-    // 左上
-    ctx.arc(-halfW + r, -halfH + r, r, 1 * Math.PI, 1.5 * Math.PI);
-    ctx.lineTo(halfW - r, -halfH);
-    // 右上
-    ctx.arc(halfW - r, -halfH + r, r, 1.5 * Math.PI, 2 * Math.PI);
-    // 右下
-    ctx.lineTo(halfW, halfH - r);
-    // 左上
-    ctx.arc(halfW - r, halfH - r, r, 0, 0.5 * Math.PI);
-    ctx.lineTo(-halfW + r, halfH);
-    ctx.arc(-halfW + r, halfH - r, r, 0.5 * Math.PI, 1 * Math.PI);
+    // 圆形
+    if (r === halfW && halfH === halfW) {
+      ctx.arc(left + r, top + r, r, 0, 2 * Math.PI);
+    } else {
+      // 左上
+      ctx.arc(left + r, top + r, r, 1 * Math.PI, 1.5 * Math.PI);
+      ctx.lineTo(left + width - r, top);
+      // 右上
+      ctx.arc(left + width - r, top + r, r, 1.5 * Math.PI, 2 * Math.PI);
+      ctx.lineTo(left + width, top + height - r);
+      // 右下
+      ctx.arc(left + width - r, top + height - r, r, 0, 0.5 * Math.PI);
+      ctx.lineTo(left + r, top + height);
+      // 左上
+      ctx.arc(left + r, top + height - r, r, 0.5 * Math.PI, 1 * Math.PI);
+    }
+
     ctx.closePath();
     this.fillorStroke.call(ctx);
-    ctx.translate(-translateX, -translateY);
   }
 }

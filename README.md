@@ -25,7 +25,8 @@
 <dt><a href="#TextElement">TextElement</a> ⇐ <code><a href="#BaseElement">BaseElement</a></code></dt>
 <dd></dd>
 <dt><a href="#MiniappCanvas">MiniappCanvas</a></dt>
-<dd></dd>
+<dd><p>MiniappCanvas
+@</p></dd>
 </dl>
 
 ## Constants
@@ -167,14 +168,19 @@
 | Name | Type | Description |
 | --- | --- | --- |
 | bgColor | <code>string</code> | <p>背景颜色</p> |
-| stroke | <code>string</code> | <p>边框样式</p> |
+| border | <code>string</code> | <p>边框样式 eg. 1px #fff</p> |
 | solid | <code>boolean</code> | <p>是否实心</p> |
-| shadow | <code>Array.&lt;any&gt;</code> | <p>阴影样式</p> |
+| boxShadow | <code>string</code> | <p>阴影样式</p> |
+| borderWidth | <code>number</code> | <p>边框宽</p> |
+| borderColor | <code>string</code> | <p>边框颜色</p> |
+| borderRadius | <code>number</code> | <p>边框半径</p> |
 
 
 * [RectElement](#RectElement) ⇐ [<code>BaseElement</code>](#BaseElement)
     * [new RectElement()](#new_RectElement_new)
     * _instance_
+        * [.border](#RectElement+border)
+        * [.boxShadow](#RectElement+boxShadow)
         * [.drawWithBorder(ctx)](#RectElement+drawWithBorder)
         * [.loadAttr(attrs, unit)](#BaseElement+loadAttr)
     * _static_
@@ -186,6 +192,18 @@
 ### new RectElement()
 <p>矩形元素</p>
 
+<a name="RectElement+border"></a>
+
+### rectElement.border
+<p>边框样式</p>
+
+**Kind**: instance property of [<code>RectElement</code>](#RectElement)  
+<a name="RectElement+boxShadow"></a>
+
+### rectElement.boxShadow
+<p>是否实心</p>
+
+**Kind**: instance property of [<code>RectElement</code>](#RectElement)  
 <a name="RectElement+drawWithBorder"></a>
 
 ### rectElement.drawWithBorder(ctx)
@@ -293,6 +311,9 @@
 <a name="MiniappCanvas"></a>
 
 ## MiniappCanvas
+<p>MiniappCanvas
+@</p>
+
 **Kind**: global class  
 **Export**:   
 
@@ -306,7 +327,7 @@
 <a name="new_MiniappCanvas_new"></a>
 
 ### new MiniappCanvas()
-<p>miniapp-canvas</p>
+<p>loadConfig后触发</p>
 
 <a name="MiniappCanvas+loadConfig"></a>
 
@@ -331,12 +352,14 @@
 <p>开始绘制canvas</p>
 
 **Kind**: instance method of [<code>MiniappCanvas</code>](#MiniappCanvas)  
+**Emits**: <code>beforeDraw,event:drawed</code>  
 <a name="MiniappCanvas+saveImage"></a>
 
 ### miniappCanvas.saveImage()
 <p>保存canvas截图</p>
 
 **Kind**: instance method of [<code>MiniappCanvas</code>](#MiniappCanvas)  
+**Emits**: <code>beforeSaveImage,event:savedImage</code>  
 <a name="cache"></a>
 
 ## cache

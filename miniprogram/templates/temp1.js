@@ -77,7 +77,7 @@ function render(canvas, data) {
     top: 10,
     solid: false,
     borderRadius: 10,
-    shadow: [2, 2, 10, '#ccc']
+    boxShadow: '2px 2px 10px #cccccc'
   }
 
   canvas.clear()

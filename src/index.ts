@@ -5,6 +5,7 @@ import {
   TextElement
 } from './elements';
 import { promisify } from './utils';
+import EventBus from './utils/eventBus';
 import Task from './utils/task';
 
 /**
@@ -27,15 +28,20 @@ const typeMap = {
  *
  * @export
  * @class MiniappCanvas
+ * @
  */
-export default class MiniappCanvas {
+export default class MiniappCanvas extends EventBus {
   private elements: BaseElement[];
   ctx: wx.CanvasContext;
   pedding = false;
 
+  /**
+   * loadConfig后触发
+   */
   private task = new Task();
 
   constructor(private id = 'default', public unit = 'px') {
+    super();
     this.elements = [];
     this.ctx = wx.createCanvasContext(id);
   }
@@ -70,6 +76,7 @@ export default class MiniappCanvas {
    */
   clear() {
     this.elements.length = 0;
+    this.task.clear();
   }
 
   initElement(Element: any, config: IDefineConfig) {
@@ -84,44 +91,64 @@ export default class MiniappCanvas {
    * @private
    * @returns Promise
    * @memberof MiniappCanvas
+   * @fires beforePreload,preloaded
    */
   private preload() {
     this.pedding = true;
+    this.emit('beforePreload');
+    const promises = this.elements.map((element: BaseElement) =>
+      element.preload()
+    );
 
-    const promises = this.elements
-      .filter(element => element instanceof ImageElement)
-      .map((element: BaseElement) => element.preload());
-
-    return Promise.all(promises);
+    return Promise.all(promises).then(() => this.emit('preloaded'));
   }
 
   /**
    * 开始绘制canvas
    *
    * @memberof MiniappCanvas
+   * @fires beforeDraw,drawed
    */
-  draw() {
+  async draw() {
     if (this.pedding) {
-      this.task.addTask(this.draw.bind(this));
-      return;
+      const peddingPromise = new Promise(resolve => this.task.addTask(resolve));
+      const reDrawPromise = new Promise(resolve =>
+        this.once('drawed', resolve)
+      );
+      Promise.all([peddingPromise, reDrawPromise]).then(this.draw.bind(this));
     }
 
     const { ctx } = this;
-    this.elements.forEach(element => {
-      element.draw(ctx);
-    });
+
+    this.emit('beforeDraw');
+
     ctx.draw();
+    const drawPromise = this.elements.map(element => {
+      return element.draw(ctx);
+    });
+
+    await Promise.all(drawPromise);
+    this.emit('drawed');
   }
 
   /**
    * 保存canvas截图
    *
    * @memberof MiniappCanvas
+   * @fires beforeSaveImage,savedImage
    */
   async saveImage() {
-    wx.showLoading({
-      title: '正在生成图片中'
-    });
+    if (this.pedding) {
+      const peddingPromise = new Promise(resolve => this.task.addTask(resolve));
+      const waitDrawPromise = new Promise(resolve =>
+        this.once('drawed', resolve)
+      );
+      return Promise.all([peddingPromise, waitDrawPromise]).then(
+        this.saveImage.bind(this)
+      );
+    }
+
+    this.emit('beforeSaveImage');
 
     let tempFilePath = '';
 
@@ -141,6 +168,8 @@ export default class MiniappCanvas {
     }
 
     wx.hideLoading();
+
+    this.emit('savedImage');
 
     return tempFilePath;
   }

@@ -11,4 +11,15 @@ export default class Task {
       task.call(ctx);
     }
   }
+
+  clear() {
+    this.tasks.length = 0;
+  }
+}
+
+export function TimeoutTask(task: Promise<any>, timeout = 100) {
+  return new Promise(resolve => {
+    task.then(resolve);
+    setTimeout(resolve, timeout);
+  });
 }

@@ -64,11 +64,11 @@ export default class BaseElement extends EventBus {
     return attrs;
   }
 
-  preload() {
+  preload(): Promise<any> {
     return Promise.resolve();
   }
 
-  draw(ctx: any) {
-    console.log('draw', ctx);
+  draw(ctx: any): Promise<any> {
+    return Promise.resolve();
   }
 }

@@ -1,5 +1,6 @@
 import parseFont from '../utils/parseFont';
 import parseTextDecoration from '../utils/parseTextDecoration';
+import { TimeoutTask } from '../utils/task';
 import BaseElement from './BaseElement';
 
 const supportTextDecoration = ['underline', 'overline', 'line-through'];
@@ -25,7 +26,7 @@ export default class TextElement extends BaseElement {
   /**
    * 字体颜色
    */
-  color: string = '#000';
+  color: string = '#000000';
   /**
    * 字体大小
    */
@@ -92,24 +93,31 @@ export default class TextElement extends BaseElement {
     ctx.setFontSize(this.fontSize);
     ctx.setTextBaseline(this.textBaseline);
     ctx.setTextAlign(this.textAlign);
+    const realRect = this.maseureTextRealRect(ctx, this.text);
     // 没有设置宽
     if (!this.width) {
       ctx.fillText(this.text, left, top);
+      this.drawTextLine(ctx, left, realRect.top, this.text);
     } else {
-      const fillTop = this.top;
-      const realRect = this.maseureTextRealRect(ctx, this.text);
       const fillRealTop = realRect.top;
 
       // 如果一行能写完
       if (realRect.width <= this.width) {
         ctx.fillText(this.text, left, top);
-        this.drawTextLine(ctx, left, fillTop, this.text);
+
+        this.drawTextLine(ctx, left, fillRealTop, this.text);
       } else {
         this.drawMultiLineText(ctx, fillRealTop);
       }
     }
 
+    const drawPromise = TimeoutTask(
+      new Promise(resolve => ctx.draw(true, resolve)),
+      500
+    );
     ctx.restore();
+
+    return drawPromise;
   }
 
   private drawMultiLineText(ctx: wx.CanvasContext, fillRealTop: number) {
