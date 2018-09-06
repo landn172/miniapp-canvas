@@ -65,7 +65,7 @@ export default class BaseElement extends EventBus {
   }
 
   preload(): Promise<any> {
-    return Promise.resolve();
+    return Promise.resolve().then(() => 'preloaded');
   }
 
   draw(ctx: any) {

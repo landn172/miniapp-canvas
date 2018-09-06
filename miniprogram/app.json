@@ -2,7 +2,8 @@
   "pages":[
     "pages/index/index",
     "pages/text/text",
-    "pages/rect/rect"
+    "pages/rect/rect",
+    "pages/qrcode/qrcode"
   ],
   "window":{
     "backgroundTextStyle":"light",

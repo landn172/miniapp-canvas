@@ -1,6 +1,7 @@
 import {
   BaseElement,
   ImageElement,
+  QRCodeElement,
   RectElement,
   TextElement
 } from './elements';
@@ -15,12 +16,14 @@ interface ITypeMap {
   image: ImageElement;
   rect: RectElement;
   text: TextElement;
+  qrcode: QRCodeElement
 }
 
 const typeMap = {
   image: ImageElement,
   rect: RectElement,
-  text: TextElement
+  text: TextElement,
+  qrcode: QRCodeElement
 };
 
 /**

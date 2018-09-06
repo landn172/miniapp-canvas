@@ -1,0 +1,3 @@
+<view class="container" id="container">
+  <canvas canvas-id="canvas-id" style="width:{{width}}px;height:{{height}}px;" disable-scroll="true"></canvas>
+</view>
