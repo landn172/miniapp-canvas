@@ -115,11 +115,12 @@ export default class RectElement extends BaseElement {
     super();
   }
 
-  draw(ctx: wx.CanvasContext) {
-    ctx.save();
-    if (this.bgColor) {
-      ctx.setFillStyle(this.bgColor);
+  setStyle(ctx: wx.CanvasContext) {
+    if (!this.solid) {
+      this.bgColor = '';
     }
+
+    ctx.setFillStyle(this.bgColor || `rgba(255, 255, 255, 0)`);
     if (this.borderColor) {
       ctx.setStrokeStyle(this.borderColor);
     }
@@ -128,10 +129,21 @@ export default class RectElement extends BaseElement {
       ctx.setLineWidth(this.borderWidth);
     }
 
-    const drawPromise = this.drawWithBorder(ctx);
-    ctx.restore();
+    this.setShadow(ctx);
+  }
 
-    return drawPromise;
+  draw(ctx: wx.CanvasContext) {
+    ctx.save();
+    ctx.beginPath();
+    this.setStyle(ctx);
+    this.drawWithBorder(ctx);
+    ctx.closePath();
+    if (!this.solid) {
+      ctx.stroke();
+    }
+    ctx.fill();
+
+    ctx.restore();
   }
 
   /**
@@ -159,17 +171,12 @@ export default class RectElement extends BaseElement {
    */
   drawWithBorder(ctx: wx.CanvasContext) {
     const { borderRadius, width, height, top, left } = this;
-    this.setShadow(ctx);
-
-    this.fillorStroke = this.solid ? ctx.fill : ctx.stroke;
 
     if (borderRadius) {
       this.pathBorderRadius(ctx);
     } else {
       ctx.rect(left, top, width, height);
-      this.fillorStroke.call(ctx);
     }
-    return TimeoutTask(new Promise(resolve => ctx.draw(true, resolve)), 500);
   }
 
   /**
@@ -186,7 +193,7 @@ export default class RectElement extends BaseElement {
     const halfH = height / 2;
     // 半径最大值
     const r = Math.min(borderRadius, halfW, halfH);
-    ctx.beginPath();
+
     // 圆形
     if (r === halfW && halfH === halfW) {
       ctx.arc(left + r, top + r, r, 0, 2 * Math.PI);
@@ -203,8 +210,5 @@ export default class RectElement extends BaseElement {
       // 左上
       ctx.arc(left + r, top + height - r, r, 0.5 * Math.PI, 1 * Math.PI);
     }
-
-    ctx.closePath();
-    this.fillorStroke.call(ctx);
   }
 }

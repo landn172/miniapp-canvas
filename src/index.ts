@@ -6,7 +6,7 @@ import {
 } from './elements';
 import { promisify } from './utils';
 import EventBus from './utils/eventBus';
-import Task from './utils/task';
+import Task, { TimeoutTask } from './utils/task';
 
 /**
  * 类型映射
@@ -122,13 +122,19 @@ export default class MiniappCanvas extends EventBus {
 
     this.emit('beforeDraw');
 
-    ctx.draw();
-    const drawPromise = this.elements.map(element => {
-      return element.draw(ctx);
-    });
+    for (const element of this.elements) {
+      element.draw(ctx);
+    }
 
-    await Promise.all(drawPromise);
-    this.emit('drawed');
+    await TimeoutTask(
+      new Promise(resolve => {
+        ctx.draw(false, resolve);
+      }),
+      3000
+    );
+
+    // 微信bug导致导出图片错乱，需要延迟触发完成事件
+    setTimeout(() => this.emit('drawed'), 100);
   }
 
   /**

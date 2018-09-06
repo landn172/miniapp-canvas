@@ -81,19 +81,15 @@ export default class ImageElement extends RectElement {
     super.draw(ctx);
 
     if (this.borderRadius) {
+      ctx.beginPath();
       ctx.setGlobalAlpha(0);
       ctx.setFillStyle('white');
       super.pathBorderRadius(ctx);
+      ctx.closePath();
       ctx.clip();
       ctx.setGlobalAlpha(1);
     }
     ctx.drawImage(this.image, this.left, this.top, this.width, this.height);
-    const drawPromise = TimeoutTask(
-      new Promise(resolve => ctx.draw(true, resolve)),
-      500
-    );
     ctx.restore();
-
-    return drawPromise;
   }
 }

@@ -68,7 +68,7 @@ export default class BaseElement extends EventBus {
     return Promise.resolve();
   }
 
-  draw(ctx: any): Promise<any> {
-    return Promise.resolve();
+  draw(ctx: any) {
+    // ignore
   }
 }

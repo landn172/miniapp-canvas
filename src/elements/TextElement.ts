@@ -111,13 +111,7 @@ export default class TextElement extends BaseElement {
       }
     }
 
-    const drawPromise = TimeoutTask(
-      new Promise(resolve => ctx.draw(true, resolve)),
-      500
-    );
     ctx.restore();
-
-    return drawPromise;
   }
 
   private drawMultiLineText(ctx: wx.CanvasContext, fillRealTop: number) {
@@ -159,13 +153,15 @@ export default class TextElement extends BaseElement {
     top: number,
     text: string
   ) {
+    let textDecorationLines: string[] = [];
+
     const { textDecoration, fontSize } = this;
 
     const { color = this.color, lines, style } = parseTextDecoration(
       textDecoration
     );
 
-    const textDecorationLines = [
+    textDecorationLines = [
       ...lines.filter(line => supportTextDecoration.indexOf(line) >= 0)
     ];
 
@@ -213,6 +209,7 @@ export default class TextElement extends BaseElement {
     }
 
     function drawTextDecorationLine() {
+      ctx.beginPath();
       ctx.setStrokeStyle(color);
       ctx.setLineWidth(1);
 
@@ -225,9 +222,9 @@ export default class TextElement extends BaseElement {
         ctx.setLineWidth(2);
       }
 
-      ctx.beginPath();
       ctx.moveTo(x, y + 0.5);
       ctx.lineTo(x + width, y + 0.5);
+      ctx.closePath();
       ctx.stroke();
     }
   }
