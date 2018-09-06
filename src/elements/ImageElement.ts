@@ -41,29 +41,18 @@ export default class ImageElement extends RectElement {
       return;
     }
 
-    // if (getCache(url)) {
-    //   return getCache(url);
-    // }
-
     // 在线资源
     if (httpSrc.test(url)) {
       try {
-        const res = await promisify<any>(wx.getImageInfo, {
-          src: url
-        });
-
-        cache(url, res.path);
-        this.image = res.path;
-        return res.path;
+        const path = await downloadImage(url);
+        this.image = path;
+        return path;
       } catch (error) {
         console.log(error);
       }
 
       return url;
     }
-
-    // 本地资源
-    cache(url, url);
 
     return url;
   }
@@ -91,5 +80,22 @@ export default class ImageElement extends RectElement {
     }
     ctx.drawImage(this.image, this.left, this.top, this.width, this.height);
     ctx.restore();
+  }
+}
+
+/* 重试次数 */
+const TRY_COUNT = 2;
+
+async function downloadImage(url: string) {
+  for (let i = 0; i < TRY_COUNT; i++) {
+    try {
+      const res = await promisify<any>(wx.getImageInfo, {
+        src: url
+      });
+
+      return res.path;
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
