@@ -143,6 +143,12 @@ export default class TextElement extends BaseElement {
         lineNum++;
         continue;
       }
+      // 最后一行宽度不足时
+      else if (i === len - 1) {
+        ctx.fillText(text, left, fillTop);
+        this.drawTextLine(ctx, left, fillRealTop, text);
+        return;
+      }
       i++;
     }
   }
