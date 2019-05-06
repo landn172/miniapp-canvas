@@ -8,3 +8,5 @@
 * 图片
 * 矩形
 * 二维码
+
+详细文档：[https://landn172.github.io/miniapp-canvas/](https://landn172.github.io/miniapp-canvas/)
