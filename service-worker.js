@@ -21,7 +21,7 @@ importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox
 self.__precacheManifest = [
   {
     "url": "404.html",
-    "revision": "adce7222e8220cdcb36425f9ef6ce53a"
+    "revision": "7887e66b3b2cc79d405ba41239b9d9c3"
   },
   {
     "url": "assets/css/0.styles.e69073ac.css",
@@ -64,32 +64,32 @@ self.__precacheManifest = [
     "revision": "1f7d64e683db05eb1dc587b15591d76d"
   },
   {
-    "url": "assets/js/app.232176a6.js",
-    "revision": "d014472981b0a9611d03823a57de3b64"
+    "url": "assets/js/app.23735ac0.js",
+    "revision": "9b0beb59eb12457b5001e98bb1e5124a"
   },
   {
     "url": "elements/base.html",
-    "revision": "3290efe940471218efe4e52ee08aa770"
+    "revision": "76b173eb7e7157887256f0fdb4c761eb"
   },
   {
     "url": "elements/image.html",
-    "revision": "521c2b8a692363747ce783c49129a940"
+    "revision": "5594c021244df7a63450b9009ef9e422"
   },
   {
     "url": "elements/qrcode.html",
-    "revision": "82481e8e0aa289fcbf5167af6b10ce72"
+    "revision": "40a7f518830d147046437278fec6f12c"
   },
   {
     "url": "elements/rect.html",
-    "revision": "90953bf698a77402a978e99c8a4566dd"
+    "revision": "c2e26f4b287b840de290d8283660cec8"
   },
   {
     "url": "elements/text.html",
-    "revision": "da03e9dacdbfbb66c11fb0f9e22c0c51"
+    "revision": "abef5d4afe3b06f29bac2560c17ecb47"
   },
   {
     "url": "index.html",
-    "revision": "b54d7be0f736cf08cb74c139b41fe2f4"
+    "revision": "feec6a3e25c611560783c8396a988561"
   }
 ].concat(self.__precacheManifest || []);
 workbox.precaching.suppressWarnings();
