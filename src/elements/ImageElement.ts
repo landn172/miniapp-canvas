@@ -1,5 +1,4 @@
-import { cache, getCache, promisify } from '../utils';
-import { TimeoutTask } from '../utils/task';
+import { promisify } from '../utils';
 import RectElement from './RectElement';
 
 const httpSrc = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/;
@@ -14,8 +13,6 @@ const httpSrc = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/;
  */
 export default class ImageElement extends RectElement {
   type = 'image';
-  dWidth: number;
-  dHeight: number;
   /**
    * 显示圆形
    *
@@ -25,14 +22,18 @@ export default class ImageElement extends RectElement {
   circle: boolean = false;
 
   /**
+   * 图片路径
+   *    本地路径
+   *    在线路径
+   */
+  image: string = '';
+
+  /**
    * Creates an instance of ImageElement.
    * @memberof ImageElement
    */
   constructor() {
     super();
-    this.image = '';
-    this.dWidth = this.width;
-    this.dHeight = this.height;
   }
 
   async preload() {
@@ -57,7 +58,7 @@ export default class ImageElement extends RectElement {
     return url;
   }
 
-  async draw(ctx: wx.CanvasContext) {
+  protected async draw(ctx: wxNS.CanvasContext) {
     if (!this.image) {
       return;
     }
@@ -78,6 +79,7 @@ export default class ImageElement extends RectElement {
       ctx.clip();
       ctx.setGlobalAlpha(1);
     }
+    // @ts-ignore
     ctx.drawImage(this.image, this.left, this.top, this.width, this.height);
     ctx.restore();
   }

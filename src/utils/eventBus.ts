@@ -1,7 +1,7 @@
 export default class EventBus {
   // tslint:disable-next-line:variable-name
   private _stores: any = {};
-  on(event: string, fn: () => any, ctx?: any) {
+  protected on(event: string, fn: () => any, ctx?: any) {
     if (typeof fn !== 'function') {
       console.error('fn must be a function');
       return;
@@ -13,14 +13,14 @@ export default class EventBus {
     });
   }
 
-  once(event: string, fn: () => any, ctx?: any) {
+  protected once(event: string, fn: () => any, ctx?: any) {
     this.on(event, fn, ctx);
     this.on(event, () => {
       this.off(event, fn);
     });
   }
 
-  emit(event: string, ...args: any[]) {
+  protected emit(event: string, ...args: any[]) {
     let store = this._stores[event];
     if (store) {
       store = store.slice(0);
@@ -30,7 +30,7 @@ export default class EventBus {
     }
   }
 
-  off(event: string, fn?: () => any) {
+  protected off(event: string, fn?: () => any) {
     // specific event
     const store = this._stores[event];
     if (!store) {

@@ -11,7 +11,7 @@ import Task from '../utils/task';
 export default class BaseElement extends EventBus {
   type: string = 'base';
 
-  task = new Task();
+  protected task = new Task();
 
   /**
    * Creates an instance of BaseElement.
@@ -22,9 +22,21 @@ export default class BaseElement extends EventBus {
    * @memberof BaseElement
    */
   constructor(
+    /**
+     * 元素宽
+     */
     public width = 0,
+    /**
+     * 元素高
+     */
     public height = 0,
+    /**
+     * 元素距离顶部距离
+     */
     public top = 0,
+    /**
+     * 元素距离左边距离
+     */
     public left = 0
   ) {
     super();
@@ -66,9 +78,5 @@ export default class BaseElement extends EventBus {
 
   preload(): Promise<any> {
     return Promise.resolve().then(() => 'preloaded');
-  }
-
-  draw(ctx: any) {
-    // ignore
   }
 }

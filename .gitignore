@@ -1,5 +1,6 @@
 node_modules/
 lib/
 dist/
+docs/.vuepress/dist
 .build*
 miniprogram/miniapp*

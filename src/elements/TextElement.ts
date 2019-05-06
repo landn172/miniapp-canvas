@@ -1,6 +1,5 @@
 import parseFont from '../utils/parseFont';
 import parseTextDecoration from '../utils/parseTextDecoration';
-import { TimeoutTask } from '../utils/task';
 import BaseElement from './BaseElement';
 
 const supportTextDecoration = ['underline', 'overline', 'line-through'];
@@ -56,11 +55,11 @@ export default class TextElement extends BaseElement {
   /**
    * 文字对齐方式
    */
-  textAlign: wx.TextAlignOptions = 'left';
+  textAlign: string = 'left';
   /**
    * 文字基线
    */
-  textBaseline: wx.TextBaseLineOptions = 'middle';
+  textBaseline: string = 'middle';
   /**
    * 文本溢出展示
    */
@@ -82,7 +81,7 @@ export default class TextElement extends BaseElement {
     super();
   }
 
-  draw(ctx: wx.CanvasContext) {
+  protected draw(ctx: wxNS.CanvasContext) {
     const { left, top } = this;
 
     ctx.save();
@@ -114,7 +113,7 @@ export default class TextElement extends BaseElement {
     ctx.restore();
   }
 
-  private drawMultiLineText(ctx: wx.CanvasContext, fillRealTop: number) {
+  private drawMultiLineText(ctx: wxNS.CanvasContext, fillRealTop: number) {
     let text = '';
     let lineNum = 1;
     let fillTop = this.top;
@@ -154,7 +153,7 @@ export default class TextElement extends BaseElement {
   }
 
   private drawTextLine(
-    ctx: wx.CanvasContext,
+    ctx: wxNS.CanvasContext,
     left: number,
     top: number,
     text: string
@@ -235,7 +234,7 @@ export default class TextElement extends BaseElement {
     }
   }
 
-  private maseureTextRealRect(ctx: wx.CanvasContext, text: string) {
+  private maseureTextRealRect(ctx: wxNS.CanvasContext, text: string) {
     const { top, left, textBaseline, fontSize, lineHeight } = this;
 
     const [width, height] = measureText(ctx, text, fontSize, lineHeight);
@@ -273,7 +272,7 @@ export default class TextElement extends BaseElement {
 }
 
 function measureText(
-  ctx: wx.CanvasContext,
+  ctx: wxNS.CanvasContext,
   text: string = '',
   fontSize: number,
   lineHeight: number = 0

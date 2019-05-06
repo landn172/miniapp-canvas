@@ -1,5 +1,4 @@
 import findColor from '../utils/findColor';
-import { TimeoutTask } from '../utils/task';
 import BaseElement from './BaseElement';
 
 const getSizeAndUnitReg = /([\d\.]+)(px|rpx)/i;
@@ -30,10 +29,18 @@ export default class RectElement extends BaseElement {
   // tslint:disable-next-line:variable-name
   private _border: string = '';
 
+  /**
+   * 边框样式 like css
+   * @example
+   *  1px solid #fff
+   */
   get border() {
     return this._border;
   }
 
+  /**
+   * 边框样式
+   */
   set border(value: string) {
     this._border = value;
     const borderColor = findColor(value);
@@ -85,6 +92,9 @@ export default class RectElement extends BaseElement {
     return this._boxShadow;
   }
 
+  /**
+   * 阴影样式
+   */
   set boxShadow(value: string) {
     this._boxShadow = value;
     let match;
@@ -115,7 +125,7 @@ export default class RectElement extends BaseElement {
     super();
   }
 
-  setStyle(ctx: wx.CanvasContext) {
+  protected setStyle(ctx: wxNS.CanvasContext) {
     if (!this.solid) {
       this.bgColor = '';
     }
@@ -132,7 +142,7 @@ export default class RectElement extends BaseElement {
     this.setShadow(ctx);
   }
 
-  draw(ctx: wx.CanvasContext) {
+  protected draw(ctx: wxNS.CanvasContext) {
     ctx.save();
     ctx.beginPath();
     this.setStyle(ctx);
@@ -150,11 +160,11 @@ export default class RectElement extends BaseElement {
    * 设置阴影
    *
    * @private
-   * @param {wx.CanvasContext} ctx
+   * @param {wxNS.CanvasContext} ctx
    * @returns {boolean}
    * @memberof RectElement
    */
-  private setShadow(ctx: wx.CanvasContext): boolean {
+  private setShadow(ctx: wxNS.CanvasContext): boolean {
     if (Array.isArray(this.shadow) && this.shadow.length === 4) {
       const [x, y, blur, color] = this.shadow;
       ctx.setShadow(x, y, blur, color);
@@ -166,10 +176,10 @@ export default class RectElement extends BaseElement {
   /**
    * 带边框绘制
    *
-   * @param {wx.CanvasContext} ctx
+   * @param {wxNS.CanvasContext} ctx
    * @memberof RectElement
    */
-  drawWithBorder(ctx: wx.CanvasContext) {
+  protected drawWithBorder(ctx: wxNS.CanvasContext) {
     const { borderRadius, width, height, top, left } = this;
 
     if (borderRadius) {
@@ -183,10 +193,10 @@ export default class RectElement extends BaseElement {
    * 绘制边框路径
    *
    * @private
-   * @param {wx.CanvasContext} ctx
+   * @param {wxNS.CanvasContext} ctx
    * @memberof RectElement
    */
-  pathBorderRadius(ctx: wx.CanvasContext) {
+  protected pathBorderRadius(ctx: wxNS.CanvasContext) {
     const { borderRadius, width, height, top, left } = this;
 
     const halfW = width / 2;

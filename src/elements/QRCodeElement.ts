@@ -3,20 +3,33 @@ import BaseElement from './BaseElement';
 
 export default class QRCodeElement extends BaseElement {
   type = 'qrcode';
-  dWidth: number;
-  dHeight: number;
+  /**
+   * 需要绘制的内容
+   */
   content: string = '';
+
+  /**
+   * 前景色
+   */
+  color: string = '#fff';
+
+  /**
+   * 背景色
+   *
+   * @type {string}
+   * @memberof QRCodeElement
+   */
+  bgColor: string = '#000';
 
   constructor() {
     super();
-    this.dWidth = this.width;
-    this.dHeight = this.height;
   }
 
-  draw(ctx: wx.CanvasContext) {
+  protected draw(ctx: wxNS.CanvasContext) {
     const { left, top, width, height } = this;
+    const { color, bgColor } = this;
     ctx.save();
-    QRCode.draw(this.content, ctx, left, top, width, height, '#fff', '#000');
+    QRCode.draw(this.content, ctx, left, top, width, height, color, bgColor);
     ctx.restore();
   }
 }

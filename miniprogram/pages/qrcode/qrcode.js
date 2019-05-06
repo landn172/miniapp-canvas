@@ -1,4 +1,6 @@
-import MC from '../../miniapp-canvas'
+import MC, { createElement } from '../../miniapp-canvas';
+
+
 
 Page({
   /**
@@ -10,19 +12,19 @@ Page({
   },
   onLoad() {
     const mc = this.canvas = new MC('canvas-id')
-    mc.loadConfig([
-      {
-        type: 'qrcode',
-        content: 'https://www.baidu.com/',
-        top: 20,
-        left: 20,
-        width: 200,
-        height: 200
-      }
-    ])
+    const qrCode = createElement({
+      type: 'qrcode',
+      content: 'https://www.baidu.com/',
+      top: 20,
+      left: 20,
+      width: 200,
+      height: 200
+    })
+    mc.loadElements([qrCode])
 
     mc.draw();
 
+    mc.saveImage().then(t => console.log('saveImage', t))
     mc.on('drawed', () => console.log('draw qrcode success'))
   }
 })

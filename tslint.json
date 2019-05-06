@@ -1,6 +1,7 @@
 {
   "extends": ["tslint:recommended", "tslint-config-prettier"],
   "rules": {
+    "jsdoc-format": false,
     "member-access": false,
     "no-console": false,
     "no-bitwise": false,

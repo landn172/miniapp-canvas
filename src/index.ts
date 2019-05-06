@@ -1,25 +1,9 @@
-import {
-  BaseElement,
-  ImageElement,
-  QRCodeElement,
-  RectElement,
-  TextElement
-} from './elements';
+import { BaseElement, ImageElement, IType2Element, ITypeMap, QRCodeElement, RectElement, TextElement, TypeKey } from './elements';
 import { promisify } from './utils';
 import EventBus from './utils/eventBus';
 import Task, { TimeoutTask } from './utils/task';
 
-/**
- * 类型映射
- */
-interface ITypeMap {
-  image: ImageElement;
-  rect: RectElement;
-  text: TextElement;
-  qrcode: QRCodeElement
-}
-
-const typeMap = {
+const typeToElement = {
   image: ImageElement,
   rect: RectElement,
   text: TextElement,
@@ -27,16 +11,38 @@ const typeMap = {
 };
 
 /**
+ * 创建元素
+ */
+export function createElement<T extends TypeKey>(
+  config: {
+    type: T;
+  } & ITypeMap[T],
+  unit = 'px'
+): IType2Element[T] {
+  const type = config.type as T;
+  const Element = typeToElement[type];
+  const element: BaseElement = new Element();
+  element.loadAttr(config, unit);
+  return element as any;
+}
+
+/**
  * miniapp-canvas
  *
  * @export
  * @class MiniappCanvas
- * @
+ * @example
+ ```ts
+  const mc = new MiniappCanvas(canvasId)
+  mc.loadConfig([borderRect, nameText, avatarImage, locationText, homePage]).then(() => {
+    canvas.draw()
+  })
+ ```
  */
 export default class MiniappCanvas extends EventBus {
   private elements: BaseElement[];
-  ctx: wx.CanvasContext;
-  pedding = false;
+  private ctx: wxNS.CanvasContext;
+  private pedding = false;
 
   /**
    * loadConfig后触发
@@ -53,22 +59,41 @@ export default class MiniappCanvas extends EventBus {
    * 加载json配置文件
    * @param {Array} config
    */
-  async loadConfig(configs: IDefineConfig[]) {
+  async loadConfig<T extends TypeKey>(
+    configs: Array<
+      {
+        type: T;
+      } & ITypeMap[T]
+    >
+  ) {
     if (!Array.isArray(configs)) {
       return;
     }
 
-    configs.forEach(c => {
-      const { type } = c;
-      const Element = typeMap[type];
-      if (!Element) {
-        return;
-      }
-      this.initElement(Element, c);
+    const elements = configs.map(c => {
+      const element = createElement(c as any, this.unit);
+      return element as any;
     });
 
+    this.loadElements(elements);
+  }
+
+  /**
+   * 加载元素
+   */
+  async loadElements(elements: BaseElement[]) {
+    this.elements.push(...elements);
+
+    await this.start();
+  }
+
+  /**
+   * loadConfig or loadElements 后
+   * 开始加载
+   */
+  private async start() {
     await this.preload();
-    this.pedding = false;
+
     this.runTasks();
   }
 
@@ -80,12 +105,6 @@ export default class MiniappCanvas extends EventBus {
   clear() {
     this.elements.length = 0;
     this.task.clear();
-  }
-
-  initElement(Element: any, config: IDefineConfig) {
-    const element = new Element();
-    element.loadAttr(config, this.unit);
-    this.elements.push(element);
   }
 
   /**
@@ -103,7 +122,10 @@ export default class MiniappCanvas extends EventBus {
       element.preload()
     );
 
-    return Promise.all(promises).then(() => this.emit('preloaded'));
+    return Promise.all(promises).then(() => {
+      this.pedding = false;
+      this.emit('preloaded');
+    });
   }
 
   /**
@@ -116,9 +138,11 @@ export default class MiniappCanvas extends EventBus {
     if (this.pedding) {
       const peddingPromise = new Promise(resolve => this.task.addTask(resolve));
       const reDrawPromise = new Promise(resolve =>
-        this.once('drawed', resolve)
+        this.once('preloaded', resolve)
       );
-      Promise.all([peddingPromise, reDrawPromise]).then(this.draw.bind(this));
+      return Promise.all([peddingPromise, reDrawPromise]).then(
+        this.draw.bind(this)
+      );
     }
 
     const { ctx } = this;
@@ -186,8 +210,4 @@ export default class MiniappCanvas extends EventBus {
   private runTasks() {
     this.task.runTask();
   }
-}
-
-interface IDefineConfig {
-  type: keyof (ITypeMap);
 }
