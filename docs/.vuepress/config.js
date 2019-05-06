@@ -1,5 +1,5 @@
 module.exports = {
-  base: '/miniapp-canvas',
+  base: '/miniapp-canvas/',
   title: 'miniapp-canvas',
   serviceWorker: true,
   themeConfig: {
