@@ -130,7 +130,8 @@ export default class RectElement extends BaseElement {
       this.bgColor = '';
     }
 
-    ctx.setFillStyle(this.bgColor || `rgba(255, 255, 255, 0)`);
+    const fillStyle = this.bgColor || `rgba(255, 255, 255, 0)`;
+    ctx.fillStyle = fillStyle;
     if (this.borderColor) {
       ctx.setStrokeStyle(this.borderColor);
     }

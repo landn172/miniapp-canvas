@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "outDir": "./lib/",
     "noImplicitAny": true,
     "inlineSourceMap": true,
@@ -7,19 +8,11 @@
     "target": "es5",
     "experimentalDecorators": true,
     "moduleResolution": "node",
-    "typeRoots": [
-      "./node_modules/@types",
-      "./node_modules/@tuhu"
-    ],
-    "lib": [
-      "es6",
-      "dom"
-    ]
+    "typeRoots": ["./node_modules/@types", "./node_modules/@tuhu"],
+    "lib": ["es6", "dom"],
+    "paths": {
+      "platforms/*": ["./src/platforms/miniprogram/*", "./src/platforms/web/*"]
+    }
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "lib",
-    "test"
-  ]
+  "exclude": ["node_modules", "dist", "lib", "test"]
 }

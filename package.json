@@ -2,8 +2,7 @@
   "name": "miniapp-canvas",
   "version": "1.4.0",
   "main": "lib/miniapp-canvas.js",
-  "module": "lib/miniapp-canvas.module.js",
-  "esnext": "lib/miniapp-canvas.es6.js",
+  "browser": "lib/miniapp-canvas.web.js",
   "typings": "lib/index.d.ts",
   "repository": "git@github.com:landn172/miniapp-canvas.git",
   "author": "蒋瑶 <landn172@gmail.com>",
@@ -11,11 +10,11 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "files": [
-    "lib"
-  ],
+  "files": ["lib"],
   "scripts": {
-    "build": "node scripts/build.js",
+    "build": "node scripts/build.js --build",
+    "watch": "node scripts/build.js --watch",
+    "web:watch": "parcel web/index.html",
     "test": "jest --env=node --colors test",
     "docs:build": "vuepress build docs",
     "prepublish": "npm run build && npm run test"
@@ -35,13 +34,15 @@
     "jest": "^24.8.0",
     "jsdoc-babel": "0.4.0-alpha.0",
     "jsdoc-to-markdown": "^4.0.1",
-    "rollup": "^0.62.0",
+    "rollup": "^1.11.3",
+    "rollup-plugin-alias": "^1.5.1",
     "rollup-plugin-filesize": "^2.0.0",
     "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-typescript2": "^0.21.0",
     "ts-jest": "^24.0.2",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.13.0",
-    "typescript": "^2.9.2",
+    "typescript": "^3.4.5",
     "vuepress": "^0.14.11"
   }
 }

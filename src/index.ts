@@ -1,5 +1,5 @@
+import * as api from 'platforms/index';
 import { BaseElement, ImageElement, IType2Element, ITypeMap, QRCodeElement, RectElement, TextElement, TypeKey } from './elements';
-import { promisify } from './utils';
 import EventBus from './utils/eventBus';
 import Task, { TimeoutTask } from './utils/task';
 
@@ -52,7 +52,7 @@ export default class MiniappCanvas extends EventBus {
   constructor(private id = 'default', public unit = 'px') {
     super();
     this.elements = [];
-    this.ctx = wx.createCanvasContext(id);
+    this.ctx = api.getCanvasContext(id);
   }
 
   /**
@@ -186,21 +186,12 @@ export default class MiniappCanvas extends EventBus {
     let tempFilePath = '';
 
     try {
-      const res = await promisify<{ tempFilePath: string }>(
-        wx.canvasToTempFilePath,
-        {
-          canvasId: this.id
-        }
-      );
+      const res = await api.canvasToTempFilePath(this.id);
 
       tempFilePath = res.tempFilePath;
     } catch (error) {
-      wx.showToast({
-        title: '生成图片失败'
-      });
+      console.error('生成图片失败', error);
     }
-
-    wx.hideLoading();
 
     this.emit('savedImage');
 

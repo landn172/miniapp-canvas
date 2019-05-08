@@ -13,8 +13,8 @@ const supportTextDecoration = ['underline', 'overline', 'line-through'];
  * @property {string} text 文字
  * @property {string} color 字体颜色
  * @property {number} fontSize 字体大小
- * @property {wx.TextAlignOptions} textAlign 文字对齐方式
- * @property {wx.TextBaseLineOptions} textBaseline 文字基线
+ * @property {any} textAlign 文字对齐方式
+ * @property {any} textBaseline 文字基线
  */
 export default class TextElement extends BaseElement {
   type = 'text';
@@ -37,7 +37,11 @@ export default class TextElement extends BaseElement {
   private _font: string = '';
 
   get font(): string {
-    return this._font;
+    if (this._font) {
+      return this._font;
+    }
+
+    return `${this.fontSize}px sans-serif`;
   }
 
   set font(value: string) {
@@ -88,8 +92,8 @@ export default class TextElement extends BaseElement {
     if (this.font) {
       ctx.font = this.font;
     }
-    ctx.setFillStyle(this.color);
-    ctx.setFontSize(this.fontSize);
+    ctx.fillStyle = this.color;
+    ctx.font = `${this.fontSize}px`;
     ctx.setTextBaseline(this.textBaseline);
     ctx.setTextAlign(this.textAlign);
     const realRect = this.maseureTextRealRect(ctx, this.text);

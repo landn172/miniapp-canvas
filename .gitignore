@@ -4,3 +4,7 @@ dist/
 docs/.vuepress/dist
 .build*
 miniprogram/miniapp*
+miniprogram/project.*
+.rpt2_cache
+web/miniapp*
+.cache

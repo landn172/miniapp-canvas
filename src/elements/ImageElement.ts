@@ -1,4 +1,4 @@
-import { promisify } from '../utils';
+import * as api from 'platforms/index';
 import RectElement from './RectElement';
 
 const httpSrc = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/;
@@ -46,7 +46,9 @@ export default class ImageElement extends RectElement {
     if (httpSrc.test(url)) {
       try {
         const path = await downloadImage(url);
-        this.image = path;
+        if (path) {
+          this.image = path;
+        }
         return path;
       } catch (error) {
         console.log(error);
@@ -73,12 +75,14 @@ export default class ImageElement extends RectElement {
     if (this.borderRadius) {
       ctx.beginPath();
       ctx.setGlobalAlpha(0);
-      ctx.setFillStyle('white');
+      const fillStyle = 'white';
+      ctx.fillStyle = fillStyle;
       super.pathBorderRadius(ctx);
       ctx.closePath();
       ctx.clip();
       ctx.setGlobalAlpha(1);
     }
+    console.log('drawImage', this.image, this.left, this.top, this.width, this.height)
     // @ts-ignore
     ctx.drawImage(this.image, this.left, this.top, this.width, this.height);
     ctx.restore();
@@ -91,9 +95,7 @@ const TRY_COUNT = 2;
 async function downloadImage(url: string) {
   for (let i = 0; i < TRY_COUNT; i++) {
     try {
-      const res = await promisify<any>(wx.getImageInfo, {
-        src: url
-      });
+      const res = await api.getImageInfo(url);
 
       return res.path;
     } catch (error) {

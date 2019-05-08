@@ -2048,10 +2048,11 @@ export default {
     const frame = that.getFrame(str);
     const px = size / width;
     if (bg) {
-      ctx.setFillStyle(bg);
+      ctx.fillStyle = bg;
       ctx.fillRect(startX, startY, cavW, cavW);
     }
-    ctx.setFillStyle(color || 'black');
+    const fillStyle = color || 'black'
+    ctx.fillStyle = fillStyle;
     for (let i = 0; i < width; i++) {
       for (let j = 0; j < width; j++) {
         if (frame[j * width + i]) {
