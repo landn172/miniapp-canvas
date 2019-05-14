@@ -1,10 +1,13 @@
 {
   "name": "miniapp-canvas",
-  "version": "1.4.0",
+  "version": "1.4.2",
   "main": "lib/miniapp-canvas.js",
   "browser": "lib/miniapp-canvas.web.js",
   "typings": "lib/index.d.ts",
-  "repository": "git@github.com:landn172/miniapp-canvas.git",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:landn172/miniapp-canvas.git"
+  },
   "author": "蒋瑶 <landn172@gmail.com>",
   "publishConfig": {
     "access": "public",

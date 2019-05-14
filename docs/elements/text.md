@@ -14,7 +14,7 @@
 | textBaseline   | *文字基线*          | middle  |
 | textDecoration | *文本修饰*, 参考css |         |
 | lineClamp      | *展示行数*          | 1       |
-|                |                     |         |
+
 
 ## 示例
 
