@@ -12,7 +12,15 @@
 - [矩形](elements/rect.md)
 - [二维码](elements/qrcode.md)
 
+## install
+
+```sh
+npm i --save miniapp-canvas # yarn add miniapp-canvas
+```
+
 ## 示例
+
+更多示例参考[examples](https://github.com/landn172/miniapp-canvas/tree/master/miniprogram)
 
 ```ts
 // SharePYQ.ts
@@ -38,7 +46,7 @@ export function createSharePYQ(url, avatar) {
   const mc = new MC('canvas-id');
 
   // 加载元素
-  mc.loadElements([img, rect, text, qrcode]);
+  mc.loadElements([img, qrcode]);
   // 绘制元素
   mc.draw();
   // 保存canvas截图
