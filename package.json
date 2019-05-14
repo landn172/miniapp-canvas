@@ -1,6 +1,6 @@
 {
   "name": "miniapp-canvas",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "main": "lib/miniapp-canvas.js",
   "browser": "lib/miniapp-canvas.web.js",
   "typings": "lib/index.d.ts",
@@ -10,7 +10,9 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "files": ["lib"],
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "build": "node scripts/build.js --build",
     "watch": "node scripts/build.js --watch",
