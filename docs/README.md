@@ -1,6 +1,8 @@
-# miniapp-canvas
+# miniapp-canvas 
 
-生成分享朋友圈图片
+[github](https://landn172.github.io/miniapp-canvas/)
+
+基于json，生成分享朋友圈图片
 
 ## 支持绘制类型
 
@@ -73,16 +75,19 @@ Page({
 
 ### 实例化参数
 
+```xml
+<canvas canvas-id='canvas-id' id="canvas-id"></canvas>
+```
+
 ```ts
 import MC from 'miniapp-canvas';
-const mc = new MC('canvas-id', 'rpx');
+const mc = new MC('canvas-id', 'px');
 ```
 
 | 参数名   | 类型   | 默认值  | 描述         |
 | -------- | ------ | ------- | ------------ |
-| canvasId | string | default | canvas 的 id |
+| canvasId | string | default | canvas-id |
 | unit     | string | px      | 单位         |
-|          |        |         |              |
 
 ### 方法
 

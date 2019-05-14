@@ -13,8 +13,7 @@
 | borderColor  | *边框颜色*          |        |
 | borderRadius | *边框半径*          | 0      |
 | boxShadow    | *阴影样式*          |        |
-|              |                     |        |
-|              |                     |        |
+
 
 ## 示例
 

@@ -3,6 +3,7 @@ module.exports = {
   title: 'miniapp-canvas',
   serviceWorker: true,
   themeConfig: {
-    sidebar: 'auto'
+    sidebar: 'auto',
+    repo: 'landn172/miniapp-canvas',
   }
 }
