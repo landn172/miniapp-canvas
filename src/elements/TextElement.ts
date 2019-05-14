@@ -1,3 +1,4 @@
+import { deprecated } from 'src/utils/decorators';
 import parseFont from '../utils/parseFont';
 import parseTextDecoration from '../utils/parseTextDecoration';
 import BaseElement from './BaseElement';
@@ -21,7 +22,19 @@ export default class TextElement extends BaseElement {
   /**
    * 文字
    */
-  text: string = '';
+  get text() {
+    return this.textContent;
+  }
+
+  @deprecated('please use [textContent] instead')
+  set text(value: string) {
+    this.textContent = value;
+  }
+  /**
+   * 文字
+   */
+  textContent: string = '';
+
   /**
    * 字体颜色
    */
@@ -85,10 +98,11 @@ export default class TextElement extends BaseElement {
     super();
   }
 
-  protected draw(ctx: wxNS.CanvasContext) {
-    const { left, top } = this;
-
+  draw(ctx: wxNS.CanvasContext) {
     ctx.save();
+    super.draw(ctx);
+    const { left, top } = this;
+    const text = this.textContent;
     if (this.font) {
       ctx.font = this.font;
     }
@@ -96,19 +110,19 @@ export default class TextElement extends BaseElement {
     ctx.font = `${this.fontSize}px`;
     ctx.setTextBaseline(this.textBaseline);
     ctx.setTextAlign(this.textAlign);
-    const realRect = this.maseureTextRealRect(ctx, this.text);
+    const realRect = this.maseureTextRealRect(ctx, text);
     // 没有设置宽
     if (!this.width) {
-      ctx.fillText(this.text, left, top);
-      this.drawTextLine(ctx, left, realRect.top, this.text);
+      ctx.fillText(text, left, top);
+      this.drawTextLine(ctx, left, realRect.top, text);
     } else {
       const fillRealTop = realRect.top;
 
       // 如果一行能写完
       if (realRect.width <= this.width) {
-        ctx.fillText(this.text, left, top);
+        ctx.fillText(text, left, top);
 
-        this.drawTextLine(ctx, left, fillRealTop, this.text);
+        this.drawTextLine(ctx, left, fillRealTop, text);
       } else {
         this.drawMultiLineText(ctx, fillRealTop);
       }
@@ -121,12 +135,12 @@ export default class TextElement extends BaseElement {
     let text = '';
     let lineNum = 1;
     let fillTop = this.top;
-    const len = this.text.length;
+    const len = this.textContent.length;
     const left = this.left;
 
     for (let i = 0; i < len; ) {
       const lastText = text;
-      text += this.text[i];
+      text += this.textContent[i];
       const [width] = measureText(ctx, text, this.fontSize, this.lineHeight);
       // 需要换行
       if (width > this.width) {

@@ -12,6 +12,16 @@ function polyfillContext(ctx: any) {
   return ctx;
 }
 
+export function getCanvasWidthAndHeight(
+  ctx: any
+): {
+  width: number;
+  height: number;
+} {
+  const canvas = ctx.canvas;
+  return canvas;
+}
+
 export const canvasToTempFilePath: ICanvasToTempFilePath = (
   canvasId: string,
   ctx?: any

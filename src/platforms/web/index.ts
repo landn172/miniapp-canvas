@@ -7,6 +7,16 @@ export const getCanvasContext: IGetCanvasContext = (id: string, ctx?: any) => {
   }
 };
 
+export function getCanvasWidthAndHeight(
+  ctx: any
+): {
+  width: number;
+  height: number;
+} {
+  const canvas = ctx.canvas;
+  return canvas;
+}
+
 function polyfillContext(ctx: any) {
   ctx.setTextBaseline = (value: string) => {
     ctx.textBaseline = value;

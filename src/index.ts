@@ -21,6 +21,7 @@ export function createElement<T extends TypeKey>(
 ): IType2Element[T] {
   const type = config.type as T;
   const Element = typeToElement[type];
+  // @ts-ignore
   const element: BaseElement = new Element();
   element.loadAttr(config, unit);
   return element as any;
@@ -82,7 +83,13 @@ export default class MiniappCanvas extends EventBus {
    * 加载元素
    */
   async loadElements(elements: BaseElement[]) {
-    this.elements.push(...elements);
+    const ctx = this.ctx;
+    this.elements.push(
+      ...elements.map(el => {
+        el.ctx = ctx;
+        return el;
+      })
+    );
 
     await this.start();
   }
@@ -149,7 +156,8 @@ export default class MiniappCanvas extends EventBus {
 
     this.emit('beforeDraw');
 
-    for (const element of this.elements) {
+    const elements = this.elements.sort((e1, e2) => e1.zIndex - e2.zIndex);
+    for (const element of elements) {
       element.draw(ctx);
     }
 
