@@ -1,7 +1,19 @@
-import * as api from 'platforms/index';
-import { BaseElement, ImageElement, IType2Element, ITypeMap, QRCodeElement, RectElement, TextElement, TypeKey } from './elements';
-import EventBus from './utils/eventBus';
-import Task, { TimeoutTask } from './utils/task';
+import * as api from "./platforms/index";
+import {
+  BaseElement,
+  ImageElement,
+  IType2Element,
+  ITypeMap,
+  QRCodeElement,
+  RectElement,
+  TextElement,
+  TypeKey
+} from "./elements";
+import EventBus from "./utils/eventBus";
+import { IHtmlResult } from "./utils/html";
+import Task, { TimeoutTask } from "./utils/task";
+
+export * from "./utils/html";
 
 const typeToElement = {
   image: ImageElement,
@@ -16,14 +28,27 @@ const typeToElement = {
 export function createElement<T extends TypeKey>(
   config: {
     type: T;
-  } & ITypeMap[T],
-  unit = 'px'
-): IType2Element[T] {
+    props: Partial<ITypeMap[T]>;
+  },
+  unit = "px"
+): IType2Element[T] | void {
   const type = config.type as T;
   const Element = typeToElement[type];
+  if (!Element) {
+    console.warn(`不支持该元素[${type}]`);
+    return;
+  }
   // @ts-ignore
   const element: BaseElement = new Element();
-  element.loadAttr(config, unit);
+  let props: any = config.props;
+
+  if (!props) {
+    props = {
+      ...config
+    };
+  }
+
+  element.loadAttr(props, unit);
   return element as any;
 }
 
@@ -50,7 +75,7 @@ export default class MiniappCanvas extends EventBus {
    */
   private task = new Task();
 
-  constructor(private id = 'default', public unit = 'px') {
+  constructor(private id = "default", public unit = "px") {
     super();
     this.elements = [];
     this.ctx = api.getCanvasContext(id);
@@ -71,10 +96,12 @@ export default class MiniappCanvas extends EventBus {
       return;
     }
 
-    const elements = configs.map(c => {
-      const element = createElement(c as any, this.unit);
-      return element as any;
-    });
+    const elements = configs
+      .map(c => {
+        const element = createElement(c as any, this.unit);
+        return element as any;
+      })
+      .filter(el => el);
 
     this.loadElements(elements);
   }
@@ -92,6 +119,22 @@ export default class MiniappCanvas extends EventBus {
     );
 
     await this.start();
+  }
+
+  /**
+   * 加载执行 htm`` 返回的结果
+   */
+  async loadHtm(result: IHtmlResult | IHtmlResult[]) {
+    const elements = []
+      .concat(result)
+      .map((c: IHtmlResult) => {
+        c.type = c.type.replace(/^m-/, "");
+        const element = createElement(c as any, this.unit);
+        return element as any;
+      })
+      .filter(el => el);
+
+    this.loadElements(elements);
   }
 
   /**
@@ -124,14 +167,14 @@ export default class MiniappCanvas extends EventBus {
    */
   private preload() {
     this.pedding = true;
-    this.emit('beforePreload');
+    this.emit("beforePreload");
     const promises = this.elements.map((element: BaseElement) =>
       element.preload()
     );
 
     return Promise.all(promises).then(() => {
       this.pedding = false;
-      this.emit('preloaded');
+      this.emit("preloaded");
     });
   }
 
@@ -145,7 +188,7 @@ export default class MiniappCanvas extends EventBus {
     if (this.pedding) {
       const peddingPromise = new Promise(resolve => this.task.addTask(resolve));
       const reDrawPromise = new Promise(resolve =>
-        this.once('preloaded', resolve)
+        this.once("preloaded", resolve)
       );
       return Promise.all([peddingPromise, reDrawPromise]).then(
         this.draw.bind(this)
@@ -154,7 +197,7 @@ export default class MiniappCanvas extends EventBus {
 
     const { ctx } = this;
 
-    this.emit('beforeDraw');
+    this.emit("beforeDraw");
 
     const elements = this.elements.sort((e1, e2) => e1.zIndex - e2.zIndex);
     for (const element of elements) {
@@ -169,7 +212,7 @@ export default class MiniappCanvas extends EventBus {
     );
 
     // 微信bug导致导出图片错乱，需要延迟触发完成事件
-    setTimeout(() => this.emit('drawed'), 100);
+    setTimeout(() => this.emit("drawed"), 100);
   }
 
   /**
@@ -182,26 +225,26 @@ export default class MiniappCanvas extends EventBus {
     if (this.pedding) {
       const peddingPromise = new Promise(resolve => this.task.addTask(resolve));
       const waitDrawPromise = new Promise(resolve =>
-        this.once('drawed', resolve)
+        this.once("drawed", resolve)
       );
       return Promise.all([peddingPromise, waitDrawPromise]).then(
         this.saveImage.bind(this)
       );
     }
 
-    this.emit('beforeSaveImage');
+    this.emit("beforeSaveImage");
 
-    let tempFilePath = '';
+    let tempFilePath = "";
 
     try {
       const res = await api.canvasToTempFilePath(this.id);
 
       tempFilePath = res.tempFilePath;
     } catch (error) {
-      console.error('生成图片失败', error);
+      console.error("生成图片失败", error);
     }
 
-    this.emit('savedImage');
+    this.emit("savedImage");
 
     return tempFilePath;
   }

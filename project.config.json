@@ -1,5 +1,5 @@
 {
-	"miniprogramRoot": "./miniprogram",
+	"miniprogramRoot": "miniprogram/",
 	"compileType": "miniprogram",
 	"libVersion": "1.9.91",
 	"setting": {
@@ -7,10 +7,13 @@
 		"es6": true,
 		"postcss": true,
 		"minified": true,
-		"newFeature": true
+		"newFeature": true,
+		"useCompilerModule": true
 	},
-	"appid": "",
+	"appid": "wx27d20205249c56a3",
 	"projectname": "miniapp-canvas",
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
 	"condition": {
 		"search": {
 			"current": -1,

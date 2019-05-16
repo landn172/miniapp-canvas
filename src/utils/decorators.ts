@@ -16,7 +16,7 @@ export function isDescriptor(desc: any) {
   return false;
 }
 
-function handleDescriptor(
+function deprecatedInner(
   target: any,
   key: any,
   descriptor: PropertyDescriptor,
@@ -32,6 +32,7 @@ function handleDescriptor(
 
     if (set) {
       descriptor.set = function(...args: any[]) {
+        console.warn(`DEPRECATION ${key}: ${msg}`);
         return set.apply(this, args);
       };
     }
@@ -55,19 +56,16 @@ function handleDescriptor(
   };
 }
 
-export function decorate(handleDescriptor: any, entryArgs: any[]) {
+export function decorate(handle: any, entryArgs: any[]) {
   if (isDescriptor(entryArgs[entryArgs.length - 1])) {
-    return handleDescriptor(...entryArgs, []);
+    return handle(...entryArgs, []);
   } else {
     return function() {
-      return handleDescriptor(
-        ...Array.prototype.slice.call(arguments),
-        entryArgs
-      );
+      return handle(...Array.prototype.slice.call(arguments), entryArgs);
     };
   }
 }
 
 export function deprecated(...args: any[]) {
-  return decorate(handleDescriptor, args);
+  return decorate(deprecatedInner, args);
 }

@@ -9,7 +9,6 @@ function createConfigElement(el) {
   const height = el.height || 16
   accTop += top + height
   el.top = accTop
-  el.left = 20;
   return el
 }
 
@@ -17,9 +16,11 @@ function createConfigElement(el) {
 const textMiddle = {
   type: 'text',
   top: 0,
-  left: 80,
+  left: 10,
+  lineHeight: 40,
   textBaseline: 'middle',
-  text: 'name',
+  backgroundColor: '#00f',
+  text: 'textMiddle',
 }
 
 const imageBorderBoxShadow = {
@@ -31,16 +32,30 @@ const imageBorderBoxShadow = {
   left: 20,
   borderRadius: 25,
   borderColor: 'yellow',
+  borderStyle: 'solid',
   borderWidth: 5,
   boxShadow: `0 0 10px #0f0`
 }
 
 const textShadow = {
   type: 'text',
-  text: `from: https://github.com/landn172`,
-  top: 10,
-  left: 20,
-  textShadow: '10px 10px 5px #0f0'
+  text: `textShadow`,
+  top: 20,
+  left: 0,
+  textShadow: '2px 2px #ff0000'
+}
+
+const textShadowBg = {
+  type: 'text',
+  text: `textShadowBg textShadowBg`,
+  top: 20,
+  left: 0,
+  width: 100,
+  lineClamp: 2,
+  overflow: `hidden`,
+  color: 'red',
+  backgroundColor: '#00f',
+  textShadow: '2px 2px #0f0'
 }
 
 const rectBorderBoxShadow = {
@@ -49,11 +64,26 @@ const rectBorderBoxShadow = {
   height: 50,
   left: 20,
   top: 20,
-  // borderRadius: 10,
+  borderRadius: 20,
   borderWidth: 10,
-  backgroundColor: '#0f0',
-  boxShadow: '1px 1px 10px #cccccc'
+  borderColor: 'yellow',
+  borderStyle: 'solid',
+  backgroundColor: 'rgba(0,0,0, 0)',
+  boxShadow: '1px 10px 10px red'
 }
+
+
+const rectBorderBoxShadow2 = {
+  type: 'rect',
+  width: 50,
+  height: 50,
+  left: 20,
+  top: 20,
+  borderRadius: 10,
+  borderWidth: 10,
+  boxShadow: '1px 1px 10px #0f0'
+}
+
 const textstr = '这是一段测试文本；这是一段测试文本；这是一段测试文本；'
 
 const textDecoration1 = {
@@ -71,8 +101,8 @@ const textDecoration1 = {
 const textDecoration2 = {
   type: 'text',
   text: textstr,
-  top: 40,
-  left: textShadow,
+  top: 50,
+  left: 10,
   textBaseline: 'top',
   textDecoration: 'overline dashed',
   lineClamp: 3,
@@ -83,8 +113,8 @@ const textDecoration2 = {
 const textDecoration3 = {
   type: 'text',
   text: textstr,
-  top: 40,
-  left: 220,
+  top: 70,
+  left: 10,
   textBaseline: 'bottom',
   fontSize: 18,
   textDecoration: 'line-through red dotted',
@@ -96,32 +126,10 @@ const textDecoration3 = {
 const qrCode = {
   type: 'qrcode',
   content: 'https://www.baidu.com/',
-  top: -50,
-  left: 20,
+  top: -30,
+  left: 10,
   width: 100,
   height: 100
-}
-
-const rectBorderRadiusBorderBoxShadow = {
-  type: 'rect',
-  top: 10,
-  width: 50,
-  height: 50,
-  left: 10,
-  // backgroundColor: 'blue',
-  borderRadius: 10,
-  borderColor: `green`,
-  borderWidth: 5,
-  boxShadow: '0px 0px 20px #f0f' //[0, 0, 20, '#f0f']
-}
-
-const rectBackgroundColor = {
-  type: 'rect',
-  width: 50,
-  height: 50,
-  left: textShadow,
-  top: 0,
-  bgColor: 'yellow'
 }
 
 const imageBoxShadow = {
@@ -129,24 +137,23 @@ const imageBoxShadow = {
   width: 50,
   height: 50,
   top: 0,
-  left: textShadow,
+  left: 10,
   image: 'https://img1.tuhu.org/Images/Products/b501/494c/06db34b118582f98feff7931_w800_h800.jpg@160h_99q.jpg',
-  circle: true,
   boxShadow: '10px 2px 20px #00f' //[10, 2, 20, '#00f']
 }
 
 const elements = [
-  // textMiddle,
-  // textShadow,
-  // imageBorderBoxShadow,
+  textMiddle,
+  textShadow,
+  textShadowBg,
+  imageBoxShadow,
+  imageBorderBoxShadow,
   rectBorderBoxShadow,
-  // textDecoration1,
-  // textDecoration2,
-  // textDecoration3,
-  // qrCode,
-  // rectBorderRadiusBorderBoxShadow,
-  // rectBackgroundColor,
-  // imageBoxShadow
+  rectBorderBoxShadow2,
+  textDecoration1,
+  textDecoration2,
+  textDecoration3,
+  qrCode,
 ].map(createConfigElement)
 
 mc.loadConfig(elements)
@@ -159,19 +166,22 @@ function createHTMLElement(elements) {
   const container = document.createElement('div')
   addStyle(container, {
     position: 'absolute',
-    left: `300`,
-    top: '0',
-    width: '1000',
-    height: '1000'
+    left: `150px`,
+    top: '0px',
+    width: '1000px',
+    height: '1000px'
   })
   elements.forEach(el => {
-    const element = createElement(el)
-    const type = element.type
+    const attr = createElement(el).getAttrs()
+    const type = attr.type
     const div = document.createElement(type === 'image' ? 'img' : 'div')
+    console.log(attr.style)
     addStyle(div, {
       position: 'absolute',
-      ...element
+      ...attr.style
     })
+    delete attr.style;
+    Object.keys(attr).forEach(key => (div[key] = attr[key]))
     container.appendChild(div)
   })
 
@@ -181,25 +191,14 @@ function createHTMLElement(elements) {
 function addStyle(el, obj) {
   const keys = Object.keys(obj)
   keys.forEach(key => {
-    if (typeof obj[key] === 'function') return
-    if (noStyle(key)) {
-      el[key] = obj[key]
-      return
-    }
     el.style[key] = addUnit(key, obj[key])
   })
 }
 
 function addUnit(key, value) {
-  const keys = ['width', 'height', 'top', 'left', 'lineHeight', 'borderRadius']
-  if (keys.includes(key)) {
-    return value + 'px'
-  }
-
   return value
 }
 
-function noStyle(key) {
-  const keys = ['textContent', 'src']
-  return keys.includes(key)
-}
+// mc.loadHtml(['<h1 id=hello>', '</h1>'], 'test html')
+
+mc.html`<h1 id=hello>Hello</h1><div class=world>World!</div>`;

@@ -1,4 +1,7 @@
+import { getSizeAndUnitReg } from '../../utils/reg';
 import { ICanvasToTempFilePath, IGetCanvasContext, IGetImageInfo, IGetSystemInfoSync } from '../platform';
+
+export const platform = 'web';
 
 export const getCanvasContext: IGetCanvasContext = (id: string, ctx?: any) => {
   const canvas = document.getElementById(id) as HTMLCanvasElement;
@@ -15,6 +18,65 @@ export function getCanvasWidthAndHeight(
 } {
   const canvas = ctx.canvas;
   return canvas;
+}
+
+/**
+ * 获取属性
+ */
+export function getAttrs(obj: any) {
+  const attrs: any = {
+    style: {}
+  };
+  const keys = Object.keys(obj);
+  const noStyleKeys = ['textContent', 'src', 'type'];
+  keys.forEach(key => {
+    if (key.includes('_')) {
+      return;
+    }
+
+    let value = obj[key];
+    const valuetype = typeof value;
+    if (['function', 'object'].includes(valuetype)) {
+      return;
+    }
+
+    if (noStyleKeys.includes(key)) {
+      attrs[key] = value;
+    } else {
+      if (key === 'textBaseline' && value === 'normal') {
+        value = 'alphabetic';
+      }
+      value = addUnit(key, value || '');
+      if('lineClamp' === key) {
+        key = `webkitLineClamp`
+        value = Number(value)
+      }
+      attrs.style[key] = value
+    }
+  });
+
+  if (obj.type === 'text') {
+    attrs.style['webkitBoxOrient'] = 'vertical';
+    attrs.style['display'] = '-webkit-box';
+    attrs.style['overflow'] = 'hidden';
+  }
+
+  return attrs;
+}
+
+function addUnit(key: string, str: string) {
+  if (['color', 'backgroundColor','lineClamp'].includes(key)) {
+    return str;
+  }
+
+  try {
+    return `${str}`.replace(getSizeAndUnitReg, (g, $1, $2 = '') => {
+      return `${$1}px${$2.includes(' ') ? $2 : ''}`;
+    });
+  } catch (error) {
+    console.error(error);
+    return str;
+  }
 }
 
 function polyfillContext(ctx: any) {

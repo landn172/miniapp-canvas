@@ -1,0 +1,11 @@
+<view class="nav">
+  <navigator url="/pages/image/index">图片</navigator>
+  <navigator url="/pages/qrcode/qrcode">二维码</navigator>
+  <navigator url="/pages/rect/rect">矩形</navigator>
+  <navigator url="/pages/text/text">文本</navigator>
+</view>
+<input type="text" placeholder="请输入github的用户名" bindinput="blur" />
+<button type="default" bindtap="confirm">生成github名片</button>
+<view class="container" id="container">
+  <canvas canvas-id="canvas-id" style="width:{{width}}px;height:{{height}}px;" disable-scroll="true"></canvas>
+</view>

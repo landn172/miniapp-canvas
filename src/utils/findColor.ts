@@ -149,15 +149,16 @@ const colorNames = {
   yellowgreen: [154, 205, 50]
 };
 
+export const abbr = /#([a-f0-9]{3,4})/i;
+export const hex = /#([a-f0-9]{6})([a-f0-9]{2})?/i;
+export const rgba = /rgba?\(\s*([+-]?\d+)\s*,\s*([+-]?\d+)\s*,\s*([+-]?\d+)\s*(?:,\s*([+-]?[\d\.]+)\s*)?\)/;
+export const per = /rgba?\(\s*([+-]?[\d\.]+)\%\s*,\s*([+-]?[\d\.]+)\%\s*,\s*([+-]?[\d\.]+)\%\s*(?:,\s*([+-]?[\d\.]+)\s*)?\)/;
+
 export default function findColor(str: string) {
   if (!str) {
     return null;
   }
 
-  const abbr = /#([a-f0-9]{3,4})/i;
-  const hex = /#([a-f0-9]{6})([a-f0-9]{2})?/i;
-  const rgba = /rgba?\(\s*([+-]?\d+)\s*,\s*([+-]?\d+)\s*,\s*([+-]?\d+)\s*(?:,\s*([+-]?[\d\.]+)\s*)?\)/;
-  const per = /rgba?\(\s*([+-]?[\d\.]+)\%\s*,\s*([+-]?[\d\.]+)\%\s*,\s*([+-]?[\d\.]+)\%\s*(?:,\s*([+-]?[\d\.]+)\s*)?\)/;
   const keyword = new RegExp(`(${Object.keys(colorNames).join('|')})\s*`, 'g');
   let match;
 

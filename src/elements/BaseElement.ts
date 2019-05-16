@@ -1,17 +1,31 @@
+import { getAttrs } from 'platforms/index';
+import { property } from '../utils/lit-plugin';
 import { rpx2px } from '../utils';
 import { deprecated } from '../utils/decorators';
 import EventBus from '../utils/eventBus';
-import findColor from '../utils/findColor';
 import { getUUID } from '../utils/getUUID';
+import { parseBorder } from '../utils/parseBorder';
+import { parseShadow } from '../utils/parseShadow';
 import Task from '../utils/task';
-
-const getSizeAndUnitReg = /([\d\.]+)(px|rpx|\s)/i;
 
 /**
  * 基础元素
  *
  * @export
  * @class BaseElement
+ * @attr width - 元素宽
+ * @attr height
+ * @attr top
+ * @attr left
+ * @attr zIndex
+ * @attr opacity
+ * @attr backgroundColor
+ * @attr borderWidth
+ * @attr borderColor
+ * @attr borderRadius
+ * @attr {solid|} borderStyle
+ * @attr border
+ * @attr boxShadow
  */
 export default class BaseElement extends EventBus {
   type: string = 'base';
@@ -21,41 +35,52 @@ export default class BaseElement extends EventBus {
    * 元素id
    */
   private id: number;
+  /**
+   * 是否使用修复的layout
+   */
+  private isFixedLayout = false;
 
   /**
    * 元素宽
    * @default 0
    */
+  @property({ type: Number })
   width = 0;
   /**
    * 元素高
    * @default 0
    */
+  @property({ type: Number })
   height = 0;
   /**
    * 元素距离父元素距离
    * @default 0
    */
+  @property({ type: Number })
   top = 0;
   /**
    * 元素距离父元素左边距离
    * @default 0
    */
+  @property({ type: Number })
   left = 0;
   /**
    * 层级
    * @default 0
    */
+  @property({ type: Number })
   zIndex = 0;
   /**
    * 透明度
    * @default 1
    */
+  @property({ type: Number })
   opacity = 1;
   /**
    * 背景颜色
    * @default ''
    */
+  @property({ type: String })
   backgroundColor = '';
 
   /**
@@ -75,24 +100,28 @@ export default class BaseElement extends EventBus {
    * 边框宽
    * @default 0
    */
+  @property({ type: Number })
   borderWidth = 0;
 
   /**
    * 边框颜色
-   * @default ''
+   * @default '#000'
    */
-  borderColor = '';
+  @property({ type: String })
+  borderColor = '#000';
 
   /**
    * 边框样式
-   * @default solid
+   * @default ''
    */
-  private readonly borderStyle = '';
+  @property({ type: String })
+  borderStyle = '';
 
   /**
    * 边框半径
    * @default 0
    */
+  @property({ type: Number })
   borderRadius: number = 0;
 
   /**
@@ -105,15 +134,15 @@ export default class BaseElement extends EventBus {
    */
   set border(value: string) {
     this._border = value;
-    const borderColor = findColor(value);
+    const result = parseBorder(value);
+    const { borderColor, borderWidth, borderStyle } = result;
     if (borderColor) {
       this.borderColor = borderColor;
     }
+    this.borderWidth = borderWidth;
 
-    const borderSizeMatch = value.match(getSizeAndUnitReg);
-    if (borderSizeMatch) {
-      const [size] = borderSizeMatch;
-      this.borderWidth = Number(size);
+    if (borderStyle) {
+      this.borderStyle = borderStyle;
     }
   }
   /**
@@ -128,54 +157,15 @@ export default class BaseElement extends EventBus {
   /**
    * 阴影样式
    */
-  private shadows: any[][] = [];
-
-  // tslint:disable-next-line:variable-name
-  private _boxShadow: string = '';
-
-  /**
-   * 阴影样式
-   */
-  get boxShadow() {
-    return this._boxShadow;
+  private get shadows(): any[][] {
+    return parseShadow(this.boxShadow || '');
   }
 
   /**
    * 阴影样式
    * @see https://developers.weixin.qq.com/miniprogram/dev/api/CanvasContext.setShadow.html
    */
-  set boxShadow(value: string) {
-    this._boxShadow = value;
-    let match;
-    const shadows = [] as any[];
-    const getSizeAndUnitRegGlobal = new RegExp(getSizeAndUnitReg, 'ig');
-
-    const values = value.split(',');
-
-    for (const v of values) {
-      const shadow = [] as any[];
-      const color = findColor(v);
-      if (!color) {
-        throw new Error('[boxShadow] 未设置颜色');
-      }
-      // tslint:disable-next-line:no-conditional-assignment
-      while ((match = getSizeAndUnitRegGlobal.exec(v))) {
-        const [, size, unit] = match;
-        if (unit === 'rpx') {
-          shadow.push(Number(rpx2px(size)));
-        } else {
-          shadow.push(Number(size));
-        }
-      }
-      // canvas 不支持css的 阴影扩散半径
-      shadow[3] = color;
-      shadow.length = 4;
-
-      shadows.push(shadow);
-    }
-
-    this.shadows = shadows;
-  }
+  boxShadow = '';
 
   protected task = new Task();
 
@@ -199,23 +189,32 @@ export default class BaseElement extends EventBus {
     const convert = unit === 'rpx' ? rpx2px : (rpx: any) => rpx;
     if (typeof attrs === 'object') {
       Object.keys(attrs).forEach(key => {
-        if (typeof this[key] !== 'undefined') {
-          this[key] = attrs[key];
+        const type = typeof this[key];
+        let value = attrs[key];
+        switch (type) {
+          case 'string':
+            value = `${value}`;
+            break;
+          case 'number':
+            value = Number(value);
+            break;
+          default:
+            break;
         }
+        this[key] = value;
       });
     }
 
+    // 批量统一转换单位
     Object.keys(this).forEach(key => {
-      if (typeof this[key] !== 'undefined') {
+      if (typeof this[key] === 'string') {
         this[key] = convert(this[key]);
       }
     });
   }
 
   getAttrs() {
-    const attrs: any = {};
-    Object.keys(this).forEach(key => (attrs[key] = this[key]));
-    return attrs;
+    return getAttrs(this);
   }
 
   preload(): Promise<any> {
@@ -224,17 +223,24 @@ export default class BaseElement extends EventBus {
 
   draw(ctx: wxNS.CanvasContext) {
     this.drawShadow(ctx);
-    this.drawPath(ctx);
     this.drawBorder(ctx);
+    this.drawPath(ctx, true, () => {
+      return this.getBackgroundLayout();
+    });
     this.drawBackground(ctx);
   }
 
   /**
    * 绘制路径
    */
-  private drawPath(ctx: wxNS.CanvasContext, clip = true) {
+  private drawPath(
+    ctx: wxNS.CanvasContext,
+    clip = true,
+    getLayout = this.getLayout.bind(this)
+  ) {
     ctx.beginPath();
-    const { borderRadius, width, height, top, left } = this;
+    const borderRadius = this.borderRadius;
+    const { width, height, top, left } = getLayout();
     if (borderRadius) {
       const halfW = width / 2;
       const halfH = height / 2;
@@ -284,10 +290,25 @@ export default class BaseElement extends EventBus {
    */
   private drawBorder(ctx: wxNS.CanvasContext) {
     // Border color (no border radius):
-    if (this.borderColor) {
-      ctx.lineWidth = this.borderWidth || 1;
-      ctx.strokeStyle = this.borderColor;
-      ctx.strokeRect(this.top, this.left, this.width, this.height);
+    if (this.borderStyle) {
+      const borderWidth = Math.max(this.borderWidth || 0, 0);
+      if (borderWidth <= 0) {
+        return;
+      }
+      ctx.save();
+      this.drawPath(ctx, false);
+      ctx.fillStyle = this.borderColor || '#000';
+      ctx.fill();
+      ctx.restore();
+
+      // 裁剪绘制区域
+      ctx.save();
+      this.drawPath(ctx, false, () => {
+        return this.getBackgroundLayout();
+      });
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fill();
+      ctx.restore();
     }
   }
 
@@ -295,24 +316,25 @@ export default class BaseElement extends EventBus {
    * 绘制阴影
    */
   private drawShadow(ctx: wxNS.CanvasContext) {
-    if (!this.shadows || this.shadows.length <= 0) {
+    const shadows = this.shadows;
+    if (!shadows || shadows.length <= 0) {
       return;
     }
-    const shadow = this.shadows[0];
+    const shadow = shadows[0];
     const [
       shadowOffsetX = 0,
       shadowOffsetY = 0,
       shadowBlur = 0,
       shadowColor
     ] = shadow;
+    // 绘制阴影
     ctx.save();
     const { width, height, top, left } = this;
     const deltaTop = height + top;
     const deltaLeft = width + left;
-    console.log({ width, height, top, left }, { deltaTop, deltaLeft });
     // 设置偏移
-    this.top = -deltaTop;
-    this.left = -deltaLeft;
+    this.top = -height;
+    this.left = -width;
     this.drawPath(ctx, false);
     // 还原
     this.top = top;
@@ -326,13 +348,49 @@ export default class BaseElement extends EventBus {
     ctx.fillStyle = shadowColor;
     ctx.fill();
     ctx.restore();
+
+    // 裁剪绘制区域
+    ctx.save();
+    this.drawPath(ctx, false);
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fill();
+    ctx.restore();
   }
 
   private drawBackground(ctx: wxNS.CanvasContext) {
     if (!this.backgroundColor) {
       return;
     }
+    ctx.save();
+
     ctx.fillStyle = this.backgroundColor;
     ctx.fill();
+    ctx.restore();
+  }
+
+  /**
+   * 获取背景layout
+   */
+  protected getBackgroundLayout() {
+    let borderWidth = Math.max(this.borderWidth || 0, 0);
+    if (!this.borderStyle) {
+      borderWidth = 0;
+    }
+    const { width, height, top, left } = this;
+    return {
+      width: width - borderWidth * 2,
+      height: height - borderWidth * 2,
+      top: top + borderWidth,
+      left: left + borderWidth
+    };
+  }
+
+  /**
+   * 获取布局
+   */
+  private getLayout() {
+    const { width, height, top, left } = this;
+
+    return { width, height, top, left };
   }
 }

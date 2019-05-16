@@ -1,16 +1,8 @@
 import * as api from 'platforms/index';
 
+export * from './cache';
 export * from './promisify';
 
-const localcache = new Map();
-
-export function cache(key: string, value: any) {
-  localcache.set(key, value);
-}
-
-export function getCache(key: string) {
-  return localcache.get(key);
-}
 
 const systemInfo = api.getSystemInfoSync();
 const screenScale = (systemInfo.screenWidth || systemInfo.windowWidth) / 750;

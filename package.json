@@ -13,7 +13,9 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "files": ["lib"],
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "build": "node scripts/build.js --build",
     "watch": "node scripts/build.js --watch",
@@ -45,7 +47,10 @@
     "ts-jest": "^24.0.2",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.13.0",
-    "typescript": "^3.4.5",
+    "typescript": "^3.5.3",
     "vuepress": "^0.14.11"
+  },
+  "dependencies": {
+    "htm": "^2.1.1"
   }
 }

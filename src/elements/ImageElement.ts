@@ -1,5 +1,6 @@
 import * as api from 'platforms/index';
-import { deprecated } from 'src/utils/decorators';
+import { deprecated } from '../utils/decorators';
+import { customElement, property } from '../utils/lit-plugin';
 import BaseElement from './BaseElement';
 
 const httpSrc = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/;
@@ -9,9 +10,11 @@ const httpSrc = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/;
  *
  * @export
  * @class ImageElement
+ * @attr src
  * @extends {BaseElement}
  * @property {boolean} circle 显示圆形
  */
+@customElement('m-image')
 export default class ImageElement extends BaseElement {
   type = 'image';
   /**
@@ -50,7 +53,8 @@ export default class ImageElement extends BaseElement {
    *    本地路径
    *    在线路径
    */
-  src: string = '';
+  @property({ type: String, value: '' })
+  src!: string;
 
   /**
    * Creates an instance of ImageElement.
@@ -86,29 +90,23 @@ export default class ImageElement extends BaseElement {
 
   async draw(ctx: wxNS.CanvasContext) {
     ctx.save();
-    // 当绘制图片时， 遇到clip时阴影不能绘制
-    // if (this.boxShadow) {
-    //   ctx.save();
-    //   this.type = 'rect';
-    //   super.draw(ctx);
-    //   ctx.fill()
-    //   this.type = 'image';
-    //   ctx.restore();
-    // }
 
     super.draw(ctx);
+    const { width, height, top, left } = this.getBackgroundLayout();
+
+    if (this.backgroundColor) {
+      ctx.save();
+      ctx.fillStyle = this.backgroundColor;
+      ctx.fillRect(top, left, width, height);
+      ctx.restore();
+    }
 
     if (!this.src) {
       return;
     }
-    if (this.backgroundColor) {
-      ctx.save();
-      ctx.fillStyle = this.backgroundColor;
-      ctx.fillRect(this.top, this.left, this.width, this.height);
-      ctx.restore();
-    }
+
     // @ts-ignore
-    ctx.drawImage(this.src, this.left, this.top, this.width, this.height);
+    ctx.drawImage(this.src, left, top, width, height);
     ctx.restore();
   }
 }
@@ -125,5 +123,12 @@ async function downloadImage(url: string) {
     } catch (error) {
       console.log(error);
     }
+  }
+}
+
+declare global {
+  // tslint:disable-next-line: interface-name
+  interface HTMLElementTagNameMap {
+    'm-image': ImageElement;
   }
 }
