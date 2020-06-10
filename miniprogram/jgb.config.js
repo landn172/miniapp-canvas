@@ -1,8 +1,7 @@
 module.exports = {
   // entryFiles: ['pages/home/home.json'],
   alias: {
-    'miniapp-canvas': "../src",
-    "platforms": "../src/platforms/miniprogram"
+    'miniapp-canvas': "./miniapp-canvas.js"
   },
   presets: ['weapp'],
   plugins: [

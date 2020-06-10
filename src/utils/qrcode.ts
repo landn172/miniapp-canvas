@@ -2013,7 +2013,7 @@ export default {
     // tslint:disable-next-line:one-variable-per-declaration
     let out, i, len, c;
 
-    out = '';
+    out = "";
     len = str.length;
     for (i = 0; i < len; i++) {
       c = str.charCodeAt(i);
@@ -2039,7 +2039,7 @@ export default {
     const that = this;
     ecclevel = ecc || ecclevel;
     if (!ctx) {
-      console.warn('No canvas provided to draw QR code in!');
+      console.warn("No canvas provided to draw QR code in!");
       return;
     }
     const size = Math.min(cavW, cavH);
@@ -2051,7 +2051,7 @@ export default {
       ctx.fillStyle = bg;
       ctx.fillRect(startX, startY, cavW, cavW);
     }
-    const fillStyle = color || 'black'
+    const fillStyle = color || "black";
     ctx.fillStyle = fillStyle;
     for (let i = 0; i < width; i++) {
       for (let j = 0; j < width; j++) {

@@ -1,17 +1,22 @@
-import { getSizeAndUnitReg } from '../../utils/reg';
-import { ICanvasToTempFilePath, IGetCanvasContext, IGetImageInfo, IGetSystemInfoSync } from '../platform';
+import { getSizeAndUnitReg } from "../../utils/reg";
+import {
+  ICanvasToTempFilePath,
+  IGetCanvasContext,
+  IGetImageInfo,
+  IGetSystemInfoSync
+} from "../platform";
 
-export const platform = 'web';
+export const platform = "web";
 
 export const getCanvasContext: IGetCanvasContext = (id: string, ctx?: any) => {
   const canvas = document.getElementById(id) as HTMLCanvasElement;
   if (canvas.getContext) {
-    return polyfillContext(canvas.getContext('2d'));
+    return polyfillContext(canvas.getContext("2d"));
   }
 };
 
 export function getCanvasWidthAndHeight(
-  ctx: any
+  ctx: CanvasRenderingContext2D
 ): {
   width: number;
   height: number;
@@ -27,51 +32,57 @@ export function getAttrs(obj: any) {
   const attrs: any = {
     style: {}
   };
-  const keys = Object.keys(obj);
-  const noStyleKeys = ['textContent', 'src', 'type'];
+  let o = obj;
+  const keys = [] as string[];
+  while (o) {
+    keys.push(...Object.getOwnPropertyNames(o));
+    o = Object.getPrototypeOf(o);
+  }
+
+  const noStyleKeys = ["textContent", "src", "type"];
   keys.forEach(key => {
-    if (key.includes('_')) {
+    if (key.includes("_")) {
       return;
     }
 
     let value = obj[key];
     const valuetype = typeof value;
-    if (['function', 'object'].includes(valuetype)) {
+    if (!value || ["function", "object"].includes(valuetype)) {
       return;
     }
 
     if (noStyleKeys.includes(key)) {
       attrs[key] = value;
     } else {
-      if (key === 'textBaseline' && value === 'normal') {
-        value = 'alphabetic';
+      if (key === "textBaseline" && value === "normal") {
+        value = "alphabetic";
       }
-      value = addUnit(key, value || '');
-      if('lineClamp' === key) {
-        key = `webkitLineClamp`
-        value = Number(value)
+      value = addUnit(key, value || "");
+      if ("lineClamp" === key) {
+        key = `webkitLineClamp`;
+        value = Number(value);
       }
-      attrs.style[key] = value
+      attrs.style[key] = value;
     }
   });
 
-  if (obj.type === 'text') {
-    attrs.style['webkitBoxOrient'] = 'vertical';
-    attrs.style['display'] = '-webkit-box';
-    attrs.style['overflow'] = 'hidden';
+  if (obj.type === "text") {
+    attrs.style["webkitBoxOrient"] = "vertical";
+    attrs.style["display"] = "-webkit-box";
+    attrs.style["overflow"] = "hidden";
   }
 
   return attrs;
 }
 
 function addUnit(key: string, str: string) {
-  if (['color', 'backgroundColor','lineClamp'].includes(key)) {
+  if (["color", "backgroundColor", "lineClamp"].includes(key)) {
     return str;
   }
 
   try {
-    return `${str}`.replace(getSizeAndUnitReg, (g, $1, $2 = '') => {
-      return `${$1}px${$2.includes(' ') ? $2 : ''}`;
+    return `${str}`.replace(getSizeAndUnitReg, (g, $1, $2 = "") => {
+      return `${$1}px${$2.includes(" ") ? $2 : ""}`;
     });
   } catch (error) {
     console.error(error);
@@ -96,6 +107,17 @@ function polyfillContext(ctx: any) {
       cb();
     }
   };
+
+  const drawImage = ctx.drawImage.bind(ctx);
+
+  ctx.drawImage = (src: string, ...args: any[]) => {
+    const img = new Image();
+    img.src = src;
+    img.onload = img.onerror = function() {
+      drawImage(img, ...args);
+    };
+  };
+
   ctx.setGlobalAlpha = (value: number) => {
     ctx.globalAlpha = value;
   };
@@ -130,11 +152,11 @@ export const canvasToTempFilePath: ICanvasToTempFilePath = (
   ctx?: any
 ) => {
   if (!HTMLCanvasElement.prototype.toBlob) {
-    Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
+    Object.defineProperty(HTMLCanvasElement.prototype, "toBlob", {
       value(callback: any, type: string, quality: number) {
         const canvas = this;
         setTimeout(() => {
-          const binStr = atob(canvas.toDataURL(type, quality).split(',')[1]);
+          const binStr = atob(canvas.toDataURL(type, quality).split(",")[1]);
           const len = binStr.length;
           const arr = new Uint8Array(len);
 
@@ -142,7 +164,7 @@ export const canvasToTempFilePath: ICanvasToTempFilePath = (
             arr[i] = binStr.charCodeAt(i);
           }
 
-          callback(new Blob([arr], { type: type || 'image/png' }));
+          callback(new Blob([arr], { type: type || "image/png" }));
         });
       }
     });
@@ -164,7 +186,7 @@ export const getImageInfo: IGetImageInfo = (url: string) => {
     img.src = url;
     img.onload = () => {
       resolve({
-        path: img,
+        path: url,
         width: img.width,
         height: img.height
       });

@@ -5,9 +5,6 @@ import { getSizeAndUnitReg } from './reg';
 export function parseBorder(value: string) {
   const borderColor = findColor(value);
   let borderWidth = 0;
-  if (borderColor) {
-    this.borderColor = borderColor;
-  }
 
   const borderSizeMatch = value.match(getSizeAndUnitReg);
   if (borderSizeMatch) {

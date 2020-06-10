@@ -1,4 +1,4 @@
-import * as api from "./platforms/index";
+import * as api from "platforms/index";
 import {
   BaseElement,
   ImageElement,

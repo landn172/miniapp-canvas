@@ -1,4 +1,4 @@
-import MC, { createElement } from 'miniapp-canvas/index';
+import MC, { createElement } from 'miniapp-canvas';
 
 Page({
   data: {

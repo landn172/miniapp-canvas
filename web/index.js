@@ -1,4 +1,4 @@
-import MC, { createElement } from './miniapp-canvas.web';
+import MC, { createElement, html } from './miniapp-canvas.web';
 
 const mc = new MC('my-canvas')
 
@@ -129,7 +129,8 @@ const qrCode = {
   top: -30,
   left: 10,
   width: 100,
-  height: 100
+  height: 100,
+  border: `1px solid #00f`
 }
 
 const imageBoxShadow = {
@@ -199,6 +200,7 @@ function addUnit(key, value) {
   return value
 }
 
-// mc.loadHtml(['<h1 id=hello>', '</h1>'], 'test html')
+// mc.loadHtm(html`<mc-rect width="30" height="30" backgroundColor="#333"></mc-rect>`);
 
-mc.html`<h1 id=hello>Hello</h1><div class=world>World!</div>`;
+// mc.draw();
+
