@@ -1,5 +1,4 @@
-<input type="text" placeholder="请输入github的用户名" bindinput="blur"/>
-<button type="default" bindtap="confirm">生成github名片</button>
+
 
 <view class="container" id="container">
   <canvas canvas-id="canvas-id" style="width:{{width}}px;height:{{height}}px;" disable-scroll="true"></canvas>

@@ -1,6 +1,17 @@
+import { customElement } from '../utils/lit-plugin';
 import QRCode from '../utils/qrcode';
 import BaseElement from './BaseElement';
 
+/**
+ *
+ *
+ * @export
+ * @class QRCodeElement
+ * @extends {BaseElement}
+ * @attr content
+ * @attr color
+ */
+@customElement('m-qrcode')
 export default class QRCodeElement extends BaseElement {
   type = 'qrcode';
   /**
@@ -13,23 +24,33 @@ export default class QRCodeElement extends BaseElement {
    */
   color: string = '#fff';
 
-  /**
-   * 背景色
-   *
-   * @type {string}
-   * @memberof QRCodeElement
-   */
-  bgColor: string = '#000';
-
   constructor() {
     super();
   }
 
-  protected draw(ctx: wxNS.CanvasContext) {
-    const { left, top, width, height } = this;
-    const { color, bgColor } = this;
+  draw(ctx: wxNS.CanvasContext) {
     ctx.save();
-    QRCode.draw(this.content, ctx, left, top, width, height, color, bgColor);
+    super.draw(ctx);
+    const { left, top, width, height } = this;
+    const { color, backgroundColor } = this;
+
+    QRCode.draw(
+      this.content,
+      ctx,
+      left,
+      top,
+      width,
+      height,
+      color,
+      backgroundColor
+    );
     ctx.restore();
+  }
+}
+
+declare global {
+  // tslint:disable-next-line: interface-name
+  interface HTMLElementTagNameMap {
+    'm-qrcode': QRCodeElement;
   }
 }

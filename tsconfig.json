@@ -7,12 +7,13 @@
     "module": "commonjs",
     "target": "es5",
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "moduleResolution": "node",
-    "typeRoots": ["./node_modules/@types", "./node_modules/@tuhu"],
+    "typeRoots": ["./node_modules/@types", "./node_modules/@tuhu", "src/typings"],
     "lib": ["es6", "dom"],
     "paths": {
       "platforms/*": ["./src/platforms/miniprogram/*", "./src/platforms/web/*"]
     }
   },
-  "exclude": ["node_modules", "dist", "lib", "test"]
+  "include": ["src"]
 }

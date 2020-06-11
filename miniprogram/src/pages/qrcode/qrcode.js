@@ -1,4 +1,4 @@
-import MC, { createElement } from '../../miniapp-canvas';
+import MC, { createElement } from 'miniapp-canvas';
 
 
 
@@ -14,11 +14,13 @@ Page({
     const mc = this.canvas = new MC('canvas-id')
     const qrCode = createElement({
       type: 'qrcode',
-      content: 'https://www.baidu.com/',
-      top: 20,
-      left: 20,
-      width: 200,
-      height: 200
+      props: {
+        content: 'https://www.baidu.com/',
+        top: 20,
+        left: 20,
+        width: 200,
+        height: 200
+      }
     })
     mc.loadElements([qrCode])
 

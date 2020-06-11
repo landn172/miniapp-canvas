@@ -24,7 +24,7 @@ export type TypeKey = keyof ITypeMap;
 
 type PartialExclude<
   T extends { type: string },
-  K = 'loadAttr' | 'preload' | 'getAttrs'
+  K = 'loadAttr' | 'preload' | 'getAttrs' | 'type'
 > = { [P in keyof T]?: P extends K ? never : T[P] } & {
   type: TypeKey
 };

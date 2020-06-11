@@ -4,9 +4,19 @@
 
 ## 支持绘制类型
 
-* 文字
-* 图片
-* 矩形
-* 二维码
+- 文字
+- 图片
+- 矩形
+- 二维码
 
 详细文档：[https://landn172.github.io/miniapp-canvas/](https://landn172.github.io/miniapp-canvas/)
+
+## demo
+
+### 小程序
+
+[miniprogram](miniprogram/)
+
+### web
+
+[web](web/)

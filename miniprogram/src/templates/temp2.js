@@ -1,4 +1,4 @@
-import MC from '../miniapp-canvas'
+import MC from 'miniapp-canvas';
 
 export default class TempCanvas {
   constructor(canvasId) {

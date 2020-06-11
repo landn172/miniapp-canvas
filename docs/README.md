@@ -24,7 +24,7 @@ npm i --save miniapp-canvas # yarn add miniapp-canvas
 
 ```ts
 // SharePYQ.ts
-import MC, { createElement } from 'miniapp-canvas';
+import MC, { html } from 'miniapp-canvas';
 
 export function createSharePYQ(url, avatar) {
   const img = createElement({
@@ -44,9 +44,22 @@ export function createSharePYQ(url, avatar) {
   });
 
   const mc = new MC('canvas-id');
-
+	const result = html`
+      <m-rect width="100" height="100" backgroundColor="#f0f"></m-rect>
+      <m-image
+        src="https://avatars1.githubusercontent.com/u/4362412?s=40&v=4"
+        width="60"
+        height="60"
+        left="50"
+        top="90"
+        borderRadius="6"
+      ></m-image>
+      <m-text text="wo shi m-text"></m-text>
+      <m-qrcode top="100" width="100" height="100" content="https://baidu.com/"/>
+   `;
+  
   // 加载元素
-  mc.loadElements([img, qrcode]);
+  mc.loadHtm(result);
   // 绘制元素
   mc.draw();
   // 保存canvas截图
@@ -99,13 +112,23 @@ const mc = new MC('canvas-id', 'px');
 
 ### 方法
 
+* **loadHtm** 加载`html()`生成的数据
+
+```ts
+
+```
+
+
+
 - **loadConfig** _加载 json 配置文件_
 
 ```ts
+import MC from 'miniapp-canvas';
+const mc = new MC('canvas-id', 'px');
 mc.loadConfig([
   {
-    type: image,
-    image: 'https://xxx'
+    type: 'image',
+    src: 'https://xxx'
   }
 ]);
 ```

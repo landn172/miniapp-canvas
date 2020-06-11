@@ -1,4 +1,4 @@
-import MC from '../../miniapp-canvas'
+import MC from 'miniapp-canvas';
 
 // pages/rect/rect.js
 Page({
@@ -22,28 +22,42 @@ Page({
         width: 50,
         height: 50,
         left: 10,
-        bgColor: 'red',
-        solid: false,
-        borderRadius: 10,
+        top: 10,
+        backgroundColor: 'red',
+        borderRadius: 5,
         boxShadow: '0px 0px 20px #f0f' //[0, 0, 20, '#f0f']
       },
       {
         type: 'rect',
-        width: 150,
-        height: 150,
+        width: 50,
+        height: 50,
         left: 120,
-        top: 120,
-        bgColor: 'yellow'
+        top: 20,
+        backgroundColor: 'yellow',
+        borderColor: 'blue',
+        borderWidth: 5,
+        borderStyle: 'solid',
+        boxShadow: '0px 0px 20px #f0f'
       },
       {
-        type: 'image',
+        type: 'rect',
         width: 50,
         height: 50,
         top: 120,
         left: 120,
-        image: 'https://img1.tuhu.org/Images/Products/b501/494c/06db34b118582f98feff7931_w800_h800.jpg@160h_99q.jpg',
-        circle: true,
-        boxShadow: '10px 2px 20px #00f' //[10, 2, 20, '#00f']
+        borderRadius: 50,
+        boxShadow: '0px 0px 20px #f0f'
+      },
+      {
+        type: 'rect',
+        width: 50,
+        height: 50,
+        top: 80,
+        left: 20,
+        borderColor: 'blue',
+        borderWidth: 5,
+        borderStyle: 'solid',
+        boxShadow: '0px 0px 20px #f0f'
       }])
     mc.draw()
   },

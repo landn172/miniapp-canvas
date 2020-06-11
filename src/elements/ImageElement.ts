@@ -1,5 +1,7 @@
 import * as api from 'platforms/index';
-import RectElement from './RectElement';
+import { deprecated } from '../utils/decorators';
+import { customElement, property } from '../utils/lit-plugin';
+import BaseElement from './BaseElement';
 
 const httpSrc = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/;
 
@@ -8,10 +10,12 @@ const httpSrc = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/;
  *
  * @export
  * @class ImageElement
+ * @attr src
  * @extends {BaseElement}
  * @property {boolean} circle 显示圆形
  */
-export default class ImageElement extends RectElement {
+@customElement('m-image')
+export default class ImageElement extends BaseElement {
   type = 'image';
   /**
    * 显示圆形
@@ -19,14 +23,38 @@ export default class ImageElement extends RectElement {
    * @type {boolean}
    * @memberof ImageElement
    */
-  circle: boolean = false;
+  @deprecated('please use [borderRadius] instead')
+  set circle(v: boolean) {
+    if (v === true) {
+      this.borderRadius = Math.max(this.width, this.height) / 2;
+    }
+  }
+
+  get circle() {
+    return this.borderRadius > 0;
+  }
 
   /**
    * 图片路径
    *    本地路径
    *    在线路径
    */
-  image: string = '';
+  @deprecated('please use [src] instead')
+  set image(value: string) {
+    this.src = value;
+  }
+
+  get image() {
+    return this.src;
+  }
+
+  /**
+   * 图片路径
+   *    本地路径
+   *    在线路径
+   */
+  @property({ type: String, value: '' })
+  src!: string;
 
   /**
    * Creates an instance of ImageElement.
@@ -37,7 +65,7 @@ export default class ImageElement extends RectElement {
   }
 
   async preload() {
-    const url = this.image;
+    const url = this.src;
     if (!url) {
       return;
     }
@@ -47,7 +75,7 @@ export default class ImageElement extends RectElement {
       try {
         const path = await downloadImage(url);
         if (path) {
-          this.image = path;
+          this.src = path;
         }
         return path;
       } catch (error) {
@@ -60,31 +88,25 @@ export default class ImageElement extends RectElement {
     return url;
   }
 
-  protected async draw(ctx: wxNS.CanvasContext) {
-    if (!this.image) {
+  async draw(ctx: wxNS.CanvasContext) {
+    ctx.save();
+
+    super.draw(ctx);
+    const { width, height, top, left } = this.getBackgroundLayout();
+
+    if (this.backgroundColor) {
+      ctx.save();
+      ctx.fillStyle = this.backgroundColor;
+      ctx.fillRect(top, left, width, height);
+      ctx.restore();
+    }
+
+    if (!this.src) {
       return;
     }
-    ctx.save();
-    if (this.circle && !this.borderRadius) {
-      this.borderRadius = Math.min(this.width, this.height) / 2;
-    }
 
-    this.bgColor = '#ffffff';
-    super.draw(ctx);
-
-    if (this.borderRadius) {
-      ctx.beginPath();
-      ctx.setGlobalAlpha(0);
-      const fillStyle = 'white';
-      ctx.fillStyle = fillStyle;
-      super.pathBorderRadius(ctx);
-      ctx.closePath();
-      ctx.clip();
-      ctx.setGlobalAlpha(1);
-    }
-    console.log('drawImage', this.image, this.left, this.top, this.width, this.height)
     // @ts-ignore
-    ctx.drawImage(this.image, this.left, this.top, this.width, this.height);
+    ctx.drawImage(this.src, left, top, width, height);
     ctx.restore();
   }
 }
@@ -101,5 +123,12 @@ async function downloadImage(url: string) {
     } catch (error) {
       console.log(error);
     }
+  }
+}
+
+declare global {
+  // tslint:disable-next-line: interface-name
+  interface HTMLElementTagNameMap {
+    'm-image': ImageElement;
   }
 }

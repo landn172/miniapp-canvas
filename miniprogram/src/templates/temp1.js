@@ -3,7 +3,7 @@
  * github用户头像、姓名、位置、主页
  */
 
-import MC from '../miniapp-canvas';
+import MC from 'miniapp-canvas';
 
 
 export default class TempCanvas {

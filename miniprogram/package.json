@@ -1,0 +1,20 @@
+{
+  "name": "miniprogram",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "cross-env NODE_ENV=production jgb build",
+    "watch": "npm run build -- --watch"
+  },
+  "dependencies": {
+    "jgb-plugin-less": "^1.9.2",
+    "jgb-plugin-typescript": "^1.9.2",
+    "jgb-preset-weapp": "^1.9.2",
+    "typescript": "^3.8.3"
+  },
+  "devDependencies": {
+    "@tuhu/miniprogram-api-typings": "^2.6.5-2",
+    "babel-plugin-transform-react-jsx": "^6.24.1"
+  }
+}

@@ -93,10 +93,27 @@ async function generateBundledModule(platform, outputFiles, format, declarations
 }
 
 function build() {
+  // return buildWeb()
   return buildMiniprogram().then(() => buildWeb())
 }
 
 function watch() {
+  // watchMiniprogram()
+  watchWeb()
+}
+
+function watchMiniprogram() {
+  const platform = "miniprogram"
+  const file = path.resolve(platform, 'miniapp-canvas.js')
+  const {inputOptions, outputOptions} = generateRollupOptions(platform, file, "cjs", false)
+  const watchOptions = {
+    ...inputOptions,
+    output: [outputOptions],
+  }
+  rollup.watch(watchOptions);
+}
+
+function watchWeb() {
   const platform = "web"
   const file = path.resolve(platform, 'miniapp-canvas.web.js')
   const {inputOptions, outputOptions} = generateRollupOptions(platform, file, "cjs", false)

@@ -1,4 +1,7 @@
+import { deprecated } from '../utils/decorators';
+import { customElement } from '../utils/lit-plugin';
 import parseFont from '../utils/parseFont';
+import { parseShadow } from '../utils/parseShadow';
 import parseTextDecoration from '../utils/parseTextDecoration';
 import BaseElement from './BaseElement';
 
@@ -10,18 +13,32 @@ const supportTextDecoration = ['underline', 'overline', 'line-through'];
  * @export
  * @class TextElement
  * @extends {BaseElement}
- * @property {string} text 文字
- * @property {string} color 字体颜色
- * @property {number} fontSize 字体大小
- * @property {any} textAlign 文字对齐方式
- * @property {any} textBaseline 文字基线
+ * @attr {string} text
+ * @attr {string} color
+ * @attr {number} fontSize
+ * @attr {any} textAlign
+ * @attr {any} textBaseline
  */
+@customElement('m-text')
 export default class TextElement extends BaseElement {
   type = 'text';
+  cacheProps: any;
   /**
    * 文字
    */
-  text: string = '';
+  get text() {
+    return this.textContent;
+  }
+
+  @deprecated('please use [textContent] instead')
+  set text(value: string) {
+    this.textContent = value;
+  }
+  /**
+   * 文字
+   */
+  textContent: string = '';
+
   /**
    * 字体颜色
    */
@@ -30,6 +47,10 @@ export default class TextElement extends BaseElement {
    * 字体大小
    */
   fontSize: number = 16;
+  /**
+   * 字体阴影
+   */
+  textShadow: string = '';
   /**
    * 字体
    */
@@ -45,11 +66,11 @@ export default class TextElement extends BaseElement {
   }
 
   set font(value: string) {
+    this._font = value;
     const size = parseFont(value, this.lineHeight).size;
     if (typeof size === 'number') {
       this.fontSize = size;
     }
-    this._font = value;
   }
 
   /**
@@ -73,7 +94,7 @@ export default class TextElement extends BaseElement {
    */
   textDecoration: string = '';
   /**
-   * 展示行数
+   * 展示行数,用于文本溢出
    */
   lineClamp: number = 1;
 
@@ -85,30 +106,75 @@ export default class TextElement extends BaseElement {
     super();
   }
 
-  protected draw(ctx: wxNS.CanvasContext) {
-    const { left, top } = this;
+  /**
+   * canvas和html绘制字体有差异，需要磨平
+   */
+  fixDrawText(ctx: wxNS.CanvasContext) {
+    this.top += this.lineHeight / 2 + 2;
+  }
 
+  /**
+   * canvas绘制字体有差异
+   */
+  fixDrawBase(ctx: wxNS.CanvasContext) {
+    this.cacheProps = {
+      width: this.width,
+      height: this.height
+    };
+    const realRect = this.maseureTextRealRect(ctx, this.textContent);
+    if (!this.width) {
+      this.width = realRect.width;
+    }
+    if (!this.height) {
+      this.height = realRect.height * this.lineClamp;
+    }
+  }
+
+  revertChange() {
+    const props = this.cacheProps || {};
+
+    Object.keys(props).forEach(key => {
+      this[key] = props[key];
+    });
+
+    this.cacheProps = {};
+  }
+
+  draw(ctx: wxNS.CanvasContext) {
+    // canvas和html绘制字体有差异，需要调整
     ctx.save();
+    ctx.font = `${this.fontSize}px`;
+    this.textBaseline = 'middle';
+    ctx.setTextBaseline(this.textBaseline);
+    ctx.setTextAlign(this.textAlign);
     if (this.font) {
       ctx.font = this.font;
     }
+
+    this.fixDrawBase(ctx);
+    super.draw(ctx);
+    this.revertChange();
+    this.fixDrawText(ctx);
+    this.setTextShadowStyle(ctx);
+
+    const { left, top } = this;
+    const text = this.textContent;
+
     ctx.fillStyle = this.color;
-    ctx.font = `${this.fontSize}px`;
-    ctx.setTextBaseline(this.textBaseline);
-    ctx.setTextAlign(this.textAlign);
-    const realRect = this.maseureTextRealRect(ctx, this.text);
+
+    const realRect = this.maseureTextRealRect(ctx, text);
     // 没有设置宽
     if (!this.width) {
-      ctx.fillText(this.text, left, top);
-      this.drawTextLine(ctx, left, realRect.top, this.text);
+      ctx.fillText(text, left, top);
+      this.drawTextLine(ctx, left, realRect.top, text);
     } else {
       const fillRealTop = realRect.top;
 
       // 如果一行能写完
       if (realRect.width <= this.width) {
-        ctx.fillText(this.text, left, top);
+        ctx.fillText(text, left, top);
 
-        this.drawTextLine(ctx, left, fillRealTop, this.text);
+        this.drawTextLine(ctx, left, fillRealTop, text);
       } else {
         this.drawMultiLineText(ctx, fillRealTop);
       }
@@ -117,16 +183,39 @@ export default class TextElement extends BaseElement {
     ctx.restore();
   }
 
+  /**
+   * 设置文本阴影样式
+   */
+  private setTextShadowStyle(ctx: wxNS.CanvasContext) {
+    const [shadow] = parseShadow(this.textShadow);
+    if (!shadow || !shadow.length) {
+      // @ts-ignore
+      ctx.shadowColor = '';
+      return;
+    }
+    const [
+      shadowOffsetX = 0,
+      shadowOffsetY = 0,
+      shadowBlur = 0,
+      shadowColor
+    ] = shadow;
+    ctx.shadowBlur = shadowBlur;
+    ctx.shadowColor = shadowColor;
+    ctx.shadowOffsetX = shadowOffsetX;
+    ctx.shadowOffsetY = shadowOffsetY;
+  }
+
   private drawMultiLineText(ctx: wxNS.CanvasContext, fillRealTop: number) {
     let text = '';
     let lineNum = 1;
     let fillTop = this.top;
-    const len = this.text.length;
+    const textContent = this.textContent;
+    const len = textContent.length;
     const left = this.left;
 
     for (let i = 0; i < len; ) {
       const lastText = text;
-      text += this.text[i];
+      text += textContent[i];
       const [width] = measureText(ctx, text, this.fontSize, this.lineHeight);
       // 需要换行
       if (width > this.width) {
@@ -223,16 +312,18 @@ export default class TextElement extends BaseElement {
       ctx.setLineWidth(1);
 
       if (style === 'dashed') {
-        ctx.setLineDash([8, 4], 0);
+        ctx.setLineDash([4, 2], 0);
+        ctx.lineDashOffset = 1;
       }
 
       if (style === 'dotted') {
-        ctx.setLineDash([2, 2], 0);
-        ctx.setLineWidth(2);
+        ctx.setLineDash([2, 1], 0);
+        ctx.setLineWidth(1);
+        ctx.lineDashOffset = 2;
       }
 
-      ctx.moveTo(x, y + 0.5);
-      ctx.lineTo(x + width, y + 0.5);
+      ctx.moveTo(x, y - 0.5);
+      ctx.lineTo(x + width, y - 0.5);
       ctx.closePath();
       ctx.stroke();
     }
@@ -288,4 +379,11 @@ function measureText(
 
   const height = lineHeight || fontSize * 1.2;
   return [width, height].map(Math.round);
+}
+
+declare global {
+  // tslint:disable-next-line: interface-name
+  interface HTMLElementTagNameMap {
+    'm-text': TextElement;
+  }
 }

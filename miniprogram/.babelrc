@@ -1,0 +1,5 @@
+{
+  "sourceMap": true,
+  "presets": ["env"],
+  "plugins": ["transform-react-jsx"]
+}
